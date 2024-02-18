@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { performOAuth, sendMagicLink } from '../../components/Auth' // Import your auth functions
+import { performOAuth, sendMagicLink } from '../components/Auth' // Import your auth functions
 
 const SignupPage = () => {
   const [email, setEmail] = useState('');

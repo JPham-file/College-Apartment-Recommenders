@@ -7,6 +7,7 @@ import { supabase } from "../lib/supabase";
 
 WebBrowser.maybeCompleteAuthSession(); // required for web only
 const redirectTo = makeRedirectUri();
+console.log({ redirectTo })
 
 const createSessionFromUrl = async (url: string) => {
   const { params, errorCode } = QueryParams.getQueryParams(url);
@@ -21,6 +22,7 @@ const createSessionFromUrl = async (url: string) => {
     refresh_token,
   });
   if (error) throw error;
+  console.log({ data: data.session })
   return data.session;
 };
 
@@ -60,7 +62,7 @@ export const sendMagicLink = async () => {
 export default function Auth() {
   // Handle linking into app from email app.
   const url = Linking.useURL();
-  console.log({url});
+  console.log({ url });
   if (url) createSessionFromUrl(url);
 
   return (
