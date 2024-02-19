@@ -1,21 +1,19 @@
 import React from "react";
-import * as WebBrowser from "expo-web-browser";
-import { Button } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { FontAwesome } from '@expo/vector-icons'; 
 import { useOAuth } from "@clerk/clerk-expo";
 import { useWarmUpBrowser } from "../hooks/useWarmUpBrowser";
- 
-WebBrowser.maybeCompleteAuthSession();
- 
+
 const SignInWithOAuth = () => {
   useWarmUpBrowser();
- 
+
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
- 
+
   const onPress = React.useCallback(async () => {
     try {
       const { createdSessionId, signIn, signUp, setActive } =
         await startOAuthFlow();
- 
+
       if (createdSessionId) {
         setActive!({ session: createdSessionId });
       } else {
@@ -26,12 +24,33 @@ const SignInWithOAuth = () => {
       console.error("OAuth error", err);
     }
   }, []);
- 
+
   return (
-    <Button
-      title="Sign in with Google"
-      onPress={onPress}
-    />
+    <TouchableOpacity onPress={onPress} style={styles.buttonContainer}>
+      <FontAwesome name="google" size={24} color="#fff" style={styles.icon} />
+      <Text style={styles.buttonText}>Continue with Google</Text>
+    </TouchableOpacity>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#000", 
+    borderRadius: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  icon: {
+    marginRight: 10,
+  },
+});
+
 export default SignInWithOAuth;
