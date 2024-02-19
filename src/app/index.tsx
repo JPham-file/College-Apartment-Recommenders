@@ -3,11 +3,11 @@ import { ClerkProvider, SignedIn, SignedOut} from "@clerk/clerk-expo";
 import SignInWithOAuth from "../components/SignInWithOAuth";
 import UseUser from "../components/UseUser";
 
-const expo_key = "pk_test_Z3JhbmQtc2t1bmstMzUuY2xlcmsuYWNjb3VudHMuZGV2JA"
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
  
 export default function App() {
   return (
-    <ClerkProvider publishableKey={expo_key}>
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
       <SafeAreaView style={styles.container}>
         <SignedIn>
           <UseUser />
