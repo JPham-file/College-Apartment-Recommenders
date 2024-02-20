@@ -19,7 +19,6 @@ jobs:
   test-node:
     # Install node dependencies and run tests
     executor: node/default
-    working_directory: /tmp
     steps:
       - checkout
       - node/install-packages:
@@ -27,6 +26,9 @@ jobs:
       - run:
           name: "Install JUnit reporter"
           command: npm install jest-junit
+      - run:
+          name: "Echo working dir"
+          command: "echo $CIRCLE_WORKING_DIRECTORY"
       - run:
           name: "Run tests"
           command: npm run test --ci --runInBand --reporters=default --reporters=jest-junit
