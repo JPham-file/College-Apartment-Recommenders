@@ -19,8 +19,6 @@ jobs:
   test-node:
     # Install node dependencies and run tests
     executor: node/default
-    environment:
-      JEST_JUNIT_OUTPUT_DIR: ./test-results/
     steps:
       - checkout
       - node/install-packages:
@@ -31,9 +29,9 @@ jobs:
       - run:
           name: "Run tests"
           command: npm run test --ci --runInBand --reporters=default --reporters=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./test-results/
       - store_test_results:
-          path: ./test-results/
-      - store_artifacts:
           path: ./test-results/
       - codecov/upload
 
