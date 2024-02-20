@@ -25,7 +25,7 @@ jobs:
             pkg-manager: npm
       - run:
           name: "Install JUnit reporter"
-          command: npm install jest-junit
+          command: npm install --save-dev jest-junit
       - run:
           name: "Run tests"
           command: npm run test --ci --runInBand --reporters="default" --reporters="jest-junit"
