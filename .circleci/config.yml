@@ -6,15 +6,26 @@ orbs:
   codecov: codecov/codecov@4.0.1
 
 jobs:
+  lint-node:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+      - run:
+          name: "Lint with ESLint"
+          command: npm run lint
+
   test-node:
     # Install node dependencies and run tests
     executor: node/default
     environment:
       JEST_JUNIT_OUTPUT_DIR: ./test-results/
     steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: npm
       - run:
           name: "Install JUnit reporter"
           command: npm install jest-junit
@@ -37,6 +48,7 @@ jobs:
 workflows:
   build-and-test:
     jobs:
+      - lint-node
       - test-node
     # - deploy:
     #     requires:
