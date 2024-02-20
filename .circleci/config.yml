@@ -33,6 +33,8 @@ jobs:
           command: npm run test --ci --runInBand --reporters=default --reporters=jest-junit
       - store_test_results:
           path: ./test-results/
+      - store_artifacts:
+          path: ./test-results/
       - codecov/upload
 
   deploy-cert:
