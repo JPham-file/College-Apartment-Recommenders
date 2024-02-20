@@ -25,7 +25,7 @@ jobs:
           path: ./test-results/
       - codecov/upload
 
-  deploy:
+  deploy-cert:
     # This is an example deploy job, not actually used by the workflow
     docker:
       - image: cimg/base:stable
