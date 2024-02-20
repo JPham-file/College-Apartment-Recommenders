@@ -13,6 +13,7 @@ const majors = [
   { key: 'engineering', label: 'Engineering', value: 'engineering' }
 ]
 
+// used for setting haptic, changing set Values
 const createValueChangeHandler = (
   step: number,
   feedbackStyle : Haptics.ImpactFeedbackStyle,
@@ -37,6 +38,10 @@ const QuestionnaireScreen = () => {
   const [selectedMajor, setSelectedMajor] = useState(null);
   const [roommates, setRoommates] = useState<number>(0);
 
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+
   const handleSubmit = () => {
 
   };
@@ -52,7 +57,7 @@ const QuestionnaireScreen = () => {
 
   const budgetChangeHandler = createValueChangeHandler(
     100,
-    Haptics.ImpactFeedbackStyle.Light,
+    Haptics.ImpactFeedbackStyle.light,
     setBudget,
     useState(-1)  // -1 will ensure first change to make haptic
   );
@@ -67,7 +72,37 @@ const QuestionnaireScreen = () => {
   return (
     <View className="flex-1 items-center justify-center" style={styles.container}>
 
-      <Text className="font-bold">Questionaire screen</Text>
+      <Text style={styles.label}>First Name:</Text>
+      <TextInput
+        style={styles.input}
+        value={firstName}
+        onChange={setFirstName}
+        placeholder="First Name:"
+      />
+
+      <Text style={styles.label}>Last Name:</Text>
+      <TextInput
+        style={styles.input}
+        value={lastName}
+        onChange={setLastName}
+        placeholder="Last Name:"
+      />
+
+      <Text style={styles.label}>Email:</Text>
+      <TextInput
+        style={styles.input}
+        value={email}
+        onChange={setEmail}
+        placeholder="Email:"
+      />
+
+      <Text style={styles.label}>Major:</Text>
+      <TextInput
+        style={styles.input}
+        value={selectedMajor}
+        onChange={setSelectedMajor}
+        placeholder="Enter your Major:"
+      />
 
       <Text>Maximum budget: {budget}</Text>
       <Slider
@@ -84,15 +119,6 @@ const QuestionnaireScreen = () => {
       />
 
 
-      <Text style={styles.label}>Major:</Text>
-      <TextInput
-        style={styles.input}
-        value={selectedMajor}
-        onChange={setSelectedMajor}
-        placeholder="Enter your Major:"
-      />
-
-
       <Text>Number of Roommates {roommates}</Text>
       <Slider
         style={styles.slider}
@@ -103,7 +129,6 @@ const QuestionnaireScreen = () => {
         minimumTrackTintColor="#1fb28a"
         maximumTrackTintColor="#d3d3d3"
         thumbTintColor="#b9e4c9"
-        // onValueChange={value => setBudget(value)}
         onValueChange = {roommatesChangeHandler}
       />
 
