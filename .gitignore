@@ -10,3 +10,7 @@ node_modules/
 # test files
 coverage/
 
+# misc
+**/.DS_Store
+**/.idea
+
