@@ -12,8 +12,9 @@ export default function FetchUser() {
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
 
   const updateUserInDatabase = async (supabase: SupabaseClient) => {
+    
     if (!supabase) {
-      console.log('Supabase client is not initialized');
+      console.log("Supabase client is not initialized");
       return;
     }
 
@@ -33,9 +34,6 @@ export default function FetchUser() {
         oauth: insertUser,
       });
   
-    if (data) {
-      console.log(`Upsert operation successful, data:`, data);
-    }
     if (error) {
       console.error("Error updating user in Supabase:", error.message);
     }
@@ -44,17 +42,18 @@ export default function FetchUser() {
 
   useEffect(() => {
     const initSupabaseAndFetchUser = async () => {
-      console.log('Init Supabase and Fetch User effect triggered');
+      console.log("Init Supabase and Fetch User effect triggered");
       if (isLoaded && isSignedIn && user) {
-        console.log('User is loaded and signed in, attempting to get token...');
+        console.log("User is loaded and signed in, attempting to get token...");
         const token = await getToken({ template: "supabase-jwt-token" });
-        console.log(`Token received: ${token ? 'Yes' : 'No'}`);
+        console.log(`Token received: ${token ? "Yes" : "No"}`);
         const initializedSupabase = await db(token!);
-        console.log('Supabase client initialized:', !!initializedSupabase);
+        console.log("Supabase client initialized:", !!initializedSupabase);
         setSupabase(initializedSupabase);
         if (user.primaryEmailAddress?.emailAddress) {
           updateUserInDatabase(initializedSupabase);
-        }
+        } else {
+          console.log("Error calling update: user has no primary email address");
       }
     };
   
