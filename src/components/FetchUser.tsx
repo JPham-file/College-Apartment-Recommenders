@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { Text } from "react-native";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { SupabaseClient } from '@supabase/supabase-js';
-import { supabaseClient } from "../lib/supabase";;
-import { v4 as uuidv4 } from "uuid";
+import { db } from "../lib/supabase";
 
 
 export default function FetchUser() {
@@ -12,21 +11,26 @@ export default function FetchUser() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
 
-  const updateUserInDatabase = async (supabase: SupabaseClient, email: string) => {
+  const updateUserInDatabase = async (supabase: SupabaseClient) => {
     if (!supabase) {
       console.log('Supabase client is not initialized');
       return;
     }
+
+    const insertUser = {
+      first_name: user!.firstName,
+      last_name: user!.lastName,
+      email: user!.primaryEmailAddress?.emailAddress,
+      profile_icon: user!.imageUrl
+    };
   
-    console.log(`Preparing to upsert user data for email: ${email}`);
-    const userId = uuidv4();
-    console.log(`Generated UUID for upsert operation: ${userId}`);
+    console.log(`Preparing to upsert user data for email: ${insertUser.email}`);
   
     const { data, error } = await supabase
       .from("User")
       .upsert({
-        id: userId,
-        email: email,
+        id: user!.id,
+        oauth: insertUser,
       });
   
     if (data) {
@@ -45,13 +49,11 @@ export default function FetchUser() {
         console.log('User is loaded and signed in, attempting to get token...');
         const token = await getToken({ template: "supabase-jwt-token" });
         console.log(`Token received: ${token ? 'Yes' : 'No'}`);
-        const initializedSupabase = await supabaseClient(token!);
+        const initializedSupabase = await db(token!);
         console.log('Supabase client initialized:', !!initializedSupabase);
         setSupabase(initializedSupabase);
         if (user.primaryEmailAddress?.emailAddress) {
-          console.log('Attempting to update user in database...');
-          console.log('Supabase client before updateUserInDatabase:', !!supabase);
-          updateUserInDatabase(initializedSupabase, user.primaryEmailAddress.emailAddress);
+          updateUserInDatabase(initializedSupabase);
         }
       }
     };

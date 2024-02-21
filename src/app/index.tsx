@@ -30,7 +30,7 @@ const SignOut = () => {
   }
   return (
     <View>
-      <Button
+      <Button 
         title="Sign Out"
         onPress={() => {
           signOut();
@@ -65,5 +65,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#000", 
+    borderRadius: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
 });
