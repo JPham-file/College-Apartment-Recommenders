@@ -1,13 +1,11 @@
 import { Button, SafeAreaView, StyleSheet, View } from "react-native";
-import { ClerkProvider, SignedIn, SignedOut, useAuth} from "@clerk/clerk-expo";
+import { ClerkProvider, SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 import SignInWithOAuth from "../components/SignInWithOAuth";
-import UseUser from "../components/UseUser";
+import FetchUser from "../components/FetchUser";
 import * as SecureStore from "expo-secure-store";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
-
- 
 const tokenCache = {
   async getToken(key: string) {
     try {
@@ -26,7 +24,7 @@ const tokenCache = {
 };
 
 const SignOut = () => {
-  const { isLoaded,signOut } = useAuth();
+  const { isLoaded, signOut } = useAuth();
   if (!isLoaded) {
     return null;
   }
@@ -41,13 +39,16 @@ const SignOut = () => {
     </View>
   );
 };
- 
+
 export default function App() {
   return (
-    <ClerkProvider tokenCache={tokenCache} publishableKey={CLERK_PUBLISHABLE_KEY}>
+    <ClerkProvider
+      tokenCache={tokenCache}
+      publishableKey={CLERK_PUBLISHABLE_KEY}
+    >
       <SafeAreaView style={styles.container}>
         <SignedIn>
-          <UseUser />
+          <FetchUser />
           <SignOut />
         </SignedIn>
         <SignedOut>
@@ -57,6 +58,7 @@ export default function App() {
     </ClerkProvider>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
