@@ -10,8 +10,7 @@ jobs:
     executor: node/default
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
+      - node/install-packages
       - run:
           name: "Lint with ESLint"
           command: npm run lint
