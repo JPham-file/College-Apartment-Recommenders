@@ -1,4 +1,4 @@
-# College-Apartment-Recommenders
+# OffCampus - A smart apartment recommender for busy college students 
 
 # Installation
 
