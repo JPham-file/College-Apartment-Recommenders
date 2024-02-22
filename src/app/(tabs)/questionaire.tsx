@@ -41,6 +41,7 @@ const QuestionnaireScreen = () => {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [college, setCollege] = useState<string>('');
 
   const handleSubmit = () => {
 
@@ -57,7 +58,7 @@ const QuestionnaireScreen = () => {
 
   const budgetChangeHandler = createValueChangeHandler(
     100,
-    Haptics.ImpactFeedbackStyle.light,
+    Haptics.ImpactFeedbackStyle.Light,
     setBudget,
     useState(-1)  // -1 will ensure first change to make haptic
   );
@@ -107,8 +108,8 @@ const QuestionnaireScreen = () => {
       <Text>Maximum budget: {budget}</Text>
       <Slider
         style={styles.slider}
-        minimumValue={200}
-        maximumValue={3000}
+        minimumValue={300}
+        maximumValue={4000}
         step={100}
         value={budget}
         minimumTrackTintColor="#1fb28a"
