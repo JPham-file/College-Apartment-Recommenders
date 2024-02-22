@@ -66,7 +66,7 @@ export default function FetchUser() {
 
   return (
     <Text>
-      Hello {user.primaryEmailAddress?.emailAddress}, welcome to Clerk
+      Hello {user.primaryEmailAddress?.emailAddress}, welcome to Off Campus!
     </Text>
   );
 }
