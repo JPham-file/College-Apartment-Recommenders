@@ -12,9 +12,8 @@ export default function FetchUser() {
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
 
   const updateUserInDatabase = async (supabase: SupabaseClient) => {
-    
     if (!supabase) {
-      console.log("Supabase client is not initialized");
+      console.log('Supabase client is not initialized');
       return;
     }
 
@@ -27,7 +26,7 @@ export default function FetchUser() {
   
     console.log(`Preparing to upsert user data for email: ${insertUser.email}`);
   
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("User")
       .upsert({
         id: user!.id,
@@ -53,7 +52,8 @@ export default function FetchUser() {
         if (user.primaryEmailAddress?.emailAddress) {
           updateUserInDatabase(initializedSupabase);
         } else {
-          console.log("Error calling update: user has no primary email address");
+          console.log("Error: user does not have a primary email address");
+        }
       }
     };
   
