@@ -6,16 +6,7 @@ orbs:
   codecov: codecov/codecov@4.0.1
 
 jobs:
-  lint-node:
-    executor: node/default
-    steps:
-      - checkout
-      - node/install-packages
-      - run:
-          name: "Lint with ESLint"
-          command: npm run lint
-
-  test-node:
+  node-lint-and-test:
     # Install node dependencies and run tests
     executor: node/default
     steps:
@@ -25,12 +16,15 @@ jobs:
           name: "Install JUnit reporter"
           command: npm install --save-dev jest-junit
       - run:
+          name: "Lint with ESLint"
+          command: npm run lint
+      - run:
           name: "Run tests"
-          command: npm test --ci --runInBand --reporters=default --reporters=jest-junit
+          command: npm run test:ci
           environment:
-            JEST_JUNIT_OUTPUT_DIR: ./test-results/
+            JEST_JUNIT_OUTPUT_DIR: <rootDir>/test-results
       - store_test_results:
-          path: ./test-results/
+          path: test-results
       - codecov/upload
 
   deploy-cert:
@@ -45,8 +39,7 @@ jobs:
 workflows:
   build-and-test:
     jobs:
-      - lint-node
-      - test-node
+      - node-lint-and-test
     # - deploy:
     #     requires:
     #       - test-node
