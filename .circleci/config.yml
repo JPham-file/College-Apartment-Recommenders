@@ -40,6 +40,6 @@ workflows:
   build-and-test:
     jobs:
       - node-lint-and-test
-    # - deploy:
+    # - deploy-cert:
     #     requires:
-    #       - test-node
+    #       - node-lint-and-test
