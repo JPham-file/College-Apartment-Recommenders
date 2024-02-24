@@ -1,3 +1,4 @@
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/TheOffCampus/College-Apartment-Recommenders/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/TheOffCampus/College-Apartment-Recommenders/tree/main)[![codecov](https://codecov.io/gh/TheOffCampus/College-Apartment-Recommenders/graph/badge.svg?token=I898P1K83R)](https://codecov.io/gh/TheOffCampus/College-Apartment-Recommenders)
 # OffCampus - A smart apartment recommender for busy college students 
 
 # Installation
