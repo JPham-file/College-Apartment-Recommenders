@@ -1,0 +1,45 @@
+# This config was automatically generated from your source code
+# Stacks detected: deps:node:.,test:jest:
+version: 2.1
+orbs:
+  node: circleci/node@5
+  codecov: codecov/codecov@4.0.1
+
+jobs:
+  node-lint-and-test:
+    # Install node dependencies and run tests
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: "Install JUnit reporter"
+          command: npm install --save-dev jest-junit
+      - run:
+          name: "Lint with ESLint"
+          command: npm run lint
+      - run:
+          name: "Run tests"
+          command: npm run test:ci
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: <rootDir>/test-results
+      - store_test_results:
+          path: test-results
+      - codecov/upload
+
+  deploy-cert:
+    # This is an example deploy job, not actually used by the workflow
+    docker:
+      - image: cimg/base:stable
+    steps:
+      # Replace this with steps to deploy to users
+      - run:
+          name: deploy
+          command: '#e.g. ./deploy.sh'
+workflows:
+  build-and-test:
+    jobs:
+      - node-lint-and-test
+    # - deploy:
+    #     requires:
+    #       - test-node
