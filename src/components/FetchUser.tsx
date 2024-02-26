@@ -1,11 +1,11 @@
 import "react-native-get-random-values";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Text, View} from "react-native";
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import {SupabaseClient} from '@supabase/supabase-js';
 import {db} from "../lib/supabase";
 
-import {userPrompt} from './userPrompt';
+import {UserPrompt} from './UserPrompt';
 
 
 export default function FetchUser() {
@@ -68,8 +68,8 @@ export default function FetchUser() {
 
   return (
     <View>
-      {userPrompt}
 
+      <UserPrompt/>
 
       <Text>
         Hello {user.primaryEmailAddress?.emailAddress}, welcome to Off Campus!

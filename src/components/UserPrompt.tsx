@@ -1,11 +1,9 @@
-import EditScreenInfo from '@/src/components/EditScreenInfo';
 import {Text, View} from '@/src/components/Themed';
 import React, {useCallback, useState} from 'react';
 import {TextInput, Button, StyleSheet} from "react-native";
 
 import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
-
 
 const majors = [
   {key: 'computer_science', label: 'Computer Science', value: 'computer_science'},
@@ -32,7 +30,7 @@ const createValueChangeHandler = (
   };
 };
 
-const userPrompt = () => {
+export const UserPrompt = () => {
   const [budget, setBudget] = useState<number>(0);
   const [lastStepIndex, setLastStepIndex] = useState<number | null>(null);
   const [selectedMajor, setSelectedMajor] = useState(null);
@@ -45,15 +43,6 @@ const userPrompt = () => {
 
   const handleSubmit = () => {
 
-  };
-  // TODO: Make sure to disable haptic feedback on web
-  const handleValueChange = (value: number) => {
-    const stepIndex = Math.round(value / 100); // Assuming step size is 100
-    if (stepIndex !== lastStepIndex) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setLastStepIndex(stepIndex);
-    }
-    setBudget(value);
   };
 
   const budgetChangeHandler = createValueChangeHandler(
@@ -115,7 +104,6 @@ const userPrompt = () => {
         minimumTrackTintColor="#1fb28a"
         maximumTrackTintColor="#d3d3d3"
         thumbTintColor="#b9e4c9"
-        // onValueChange={value => setBudget(value)}
         onValueChange={budgetChangeHandler}
       />
 
@@ -164,4 +152,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default userPrompt;
+
+
