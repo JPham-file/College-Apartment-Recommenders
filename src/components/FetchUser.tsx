@@ -1,4 +1,3 @@
-import "react-native-get-random-values";
 import { useEffect, useState } from "react";
 import { Text } from "react-native";
 import { useAuth, useUser } from "@clerk/clerk-expo";
