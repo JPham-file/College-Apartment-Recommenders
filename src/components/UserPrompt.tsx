@@ -11,13 +11,13 @@ import {addStudent} from '@/src/components/addStudent';
 import RNPickerSelect from 'react-native-picker-select';
 
 const majors = [
-  {key: 'computer_science', label: 'Computer Science', value: 'computer_science'},
-  {key: 'business', label: 'Business', value: 'business'},
-  {key: 'engineering', label: 'Engineering', value: 'engineering'}
+  { label: 'Computer Science', value: 'Computer Science'},
+  { label: 'Business', value: 'Business'},
+  { label: 'Electrical Engineering', value: 'Electrical Engineering'}
 ]
 
 const campuses = [
-  { label: 'Texas A&M University', value: 'Texas A&M University', key: 'TAMU' }
+  { label: 'Texas A&M University', value: 'Texas A&M University' }
 ];
 
 // used for setting haptic, changing set Values
@@ -94,18 +94,36 @@ export const UserPrompt = () => {
   const campusChangeHandler = (value: string) => setCampus(value);
 
   return (
-    <View className="flex-1 items-center justify-center" style={styles.container}>
+    <View className="flex-1 p-4 justify-center">
 
-      <Text style={styles.label}>Campus:</Text>
-      <RNPickerSelect onValueChange={campusChangeHandler} items={campuses} />
 
-      <Text style={styles.label}>Major:</Text>
-      <TextInput
-        style={styles.input}
-        value={selectedMajor}
-        onChangeText={(value) => setSelectedMajor(value)}
-        placeholder="Enter your Major:"
-      />
+
+      <View className="flex-row justify-between my-2">
+        <Text className="text-white">Campus:</Text>
+        <RNPickerSelect 
+          onValueChange={campusChangeHandler} 
+          value={campus}
+          items={campuses} 
+          darkTheme={true}
+          //placeholder={{}} // LEAVE THIS;  disables the default "select item" option
+          style={{ inputIOS: { color: "gray" } }}
+          />
+      </View>
+
+
+      <View className="flex-row justify-between my-2">
+        <Text className="text-white">Major:</Text>
+        <RNPickerSelect 
+          onValueChange={setSelectedMajor} 
+          value={selectedMajor}
+          items={majors} 
+          darkTheme={true}
+          //placeholder={{}} // LEAVE THIS;  disables the default "select item" option
+          style={{ inputIOS: { color: "gray" } }}
+          />
+      </View>
+
+
 
       <Text>Maximum budget: {budget}</Text>
       <Slider
