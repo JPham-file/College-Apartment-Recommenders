@@ -6,6 +6,7 @@ import {TextInput, Button, StyleSheet} from "react-native";
 import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
 
+import {UserPrompt} from '@/src/components/UserPrompt';
 
 const majors = [
   { key: 'computer_science', label: 'Computer Science', value: 'computer_science' },
@@ -32,110 +33,10 @@ const createValueChangeHandler = (
   };
 };
 
+
 const QuestionnaireScreen = () => {
-  const [budget, setBudget] = useState<number>(0);
-  const [lastStepIndex, setLastStepIndex] = useState<number | null>(null);
-  const [selectedMajor, setSelectedMajor] = useState(null);
-  const [roommates, setRoommates] = useState<number>(0);
-
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [college, setCollege] = useState<string>('');
-
-  const handleSubmit = () => {
-
-  };
-  // TODO: Make sure to disable haptic feedback on web
-  const handleValueChange = (value: number) => {
-    const stepIndex = Math.round(value / 100); // Assuming step size is 100
-    if (stepIndex !== lastStepIndex) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setLastStepIndex(stepIndex);
-    }
-    setBudget(value);
-  };
-
-  const budgetChangeHandler = createValueChangeHandler(
-    100,
-    Haptics.ImpactFeedbackStyle.Light,
-    setBudget,
-    useState(-1)  // -1 will ensure first change to make haptic
-  );
-
-  const roommatesChangeHandler = createValueChangeHandler(
-    1,
-    Haptics.ImpactFeedbackStyle.Light,
-    setRoommates,
-    useState(-1)  // -1 will ensure first change to make haptic
-  );
-
   return (
-    <View className="flex-1 items-center justify-center" style={styles.container}>
-
-      <Text style={styles.label}>First Name:</Text>
-      <TextInput
-        style={styles.input}
-        value={firstName}
-        onChange={setFirstName}
-        placeholder="First Name:"
-      />
-
-      <Text style={styles.label}>Last Name:</Text>
-      <TextInput
-        style={styles.input}
-        value={lastName}
-        onChange={setLastName}
-        placeholder="Last Name:"
-      />
-
-      <Text style={styles.label}>Email:</Text>
-      <TextInput
-        style={styles.input}
-        value={email}
-        onChange={setEmail}
-        placeholder="Email:"
-      />
-
-      <Text style={styles.label}>Major:</Text>
-      <TextInput
-        style={styles.input}
-        value={selectedMajor}
-        onChange={setSelectedMajor}
-        placeholder="Enter your Major:"
-      />
-
-      <Text>Maximum budget: {budget}</Text>
-      <Slider
-        style={styles.slider}
-        minimumValue={300}
-        maximumValue={4000}
-        step={100}
-        value={budget}
-        minimumTrackTintColor="#1fb28a"
-        maximumTrackTintColor="#d3d3d3"
-        thumbTintColor="#b9e4c9"
-        // onValueChange={value => setBudget(value)}
-        onValueChange = {budgetChangeHandler}
-      />
-
-
-      <Text>Number of Roommates {roommates}</Text>
-      <Slider
-        style={styles.slider}
-        minimumValue={0}
-        maximumValue={5}
-        step={1}
-        value={roommates}
-        minimumTrackTintColor="#1fb28a"
-        maximumTrackTintColor="#d3d3d3"
-        thumbTintColor="#b9e4c9"
-        onValueChange = {roommatesChangeHandler}
-      />
-
-      <Button title="Submit" onPress={handleSubmit} />
-
-    </View>
+    <UserPrompt/>
   );
 }
 

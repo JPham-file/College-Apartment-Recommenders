@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
-import { Text } from "react-native";
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import { SupabaseClient } from '@supabase/supabase-js';
-import { db } from "../lib/supabase";
+import "react-native-get-random-values";
+import React, {useEffect, useState} from "react";
+import {Text, View} from "react-native";
+import {useAuth, useUser} from "@clerk/clerk-expo";
+import {SupabaseClient} from '@supabase/supabase-js';
+import {db} from "../lib/supabase";
+
+import {UserPrompt} from './UserPrompt';
+
 
 
 export default function FetchUser() {
-  const { getToken } = useAuth();
-  const { isLoaded, isSignedIn, user } = useUser();
+  const {getToken} = useAuth();
+  const {isLoaded, isSignedIn, user} = useUser();
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
 
   const updateUserInDatabase = async (supabase: SupabaseClient) => {
@@ -22,28 +26,28 @@ export default function FetchUser() {
       email: user!.primaryEmailAddress?.emailAddress,
       profile_icon: user!.imageUrl
     };
-  
+
     console.log(`Preparing to upsert user data for email: ${insertUser.email}`);
-  
-    const { error } = await supabase
+
+    const {error} = await supabase
       .from("User")
       .upsert({
         id: user!.id,
         oauth: insertUser,
       });
-  
+
     if (error) {
       console.error("Error updating user in Supabase:", error.message);
     }
   };
-  
+
 
   useEffect(() => {
     const initSupabaseAndFetchUser = async () => {
       console.log("Init Supabase and Fetch User effect triggered");
       if (isLoaded && isSignedIn && user) {
         console.log("User is loaded and signed in, attempting to get token...");
-        const token = await getToken({ template: "supabase-jwt-token" });
+        const token = await getToken({template: "supabase-jwt-token"});
         console.log(`Token received: ${token ? "Yes" : "No"}`);
         const initializedSupabase = await db(token!);
         console.log("Supabase client initialized:", !!initializedSupabase);
@@ -55,17 +59,23 @@ export default function FetchUser() {
         }
       }
     };
-  
+
     initSupabaseAndFetchUser();
   }, [isLoaded, isSignedIn, user, getToken]);
-  
+
   if (!isLoaded || !isSignedIn) {
     return null;
   }
 
   return (
-    <Text>
-      Hello {user.primaryEmailAddress?.emailAddress}, welcome to Off Campus!
-    </Text>
+    <View>
+
+      <UserPrompt/>
+
+      <Text>
+        Hello {user.primaryEmailAddress?.emailAddress}, welcome to Off Campus!
+      </Text>
+
+    </View>
   );
 }
