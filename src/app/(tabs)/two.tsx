@@ -34,8 +34,8 @@ const roommateOptions = [
 
 
 const PreferenceItem: React.FC<Preference> = ({ text, defaultValue, onValueChange, isEditing, data }) => (
-  <View className="flex-row justify-between bg-gray-700 my-2">
-    <Text className="text-gray-300">{text}</Text>
+  <View className="flex-row justify-between my-2">
+    <Text className="text-white">{text}</Text>
     <RNPickerSelect
       onValueChange={(val: string) => onValueChange(val)}
       items={data}
@@ -43,7 +43,7 @@ const PreferenceItem: React.FC<Preference> = ({ text, defaultValue, onValueChang
       disabled={!isEditing}
       darkTheme={true}
       placeholder={{}} // LEAVE THIS;  disables the default "select item" option
-      style={{ inputIOS: { color: "white" } }}
+      style={{ inputIOS: { color: "gray" } }}
     />
   </View>
 );
@@ -85,22 +85,22 @@ export default function TabTwoScreen() {
   }
 
   return (
-    <View className="bg-gray-800 flex-1 p-4">
+    <View className="flex-1 p-4">
 
-      <Text className="text-gray-300 text-lg font-bold mb-2">Account Details</Text>
-      <View className="bg-gray-700 p-3 rounded-lg">
-        <View className="flex-row justify-between bg-gray-700 mb-2">
-          <Text className="text-gray-300">Name</Text>
-          <Text className="text-white">{DBvalues.name}</Text>
+      <Text className="text-white text-lg font-bold mb-2">Account Details</Text>
+      <View className="p-3 rounded-lg">
+        <View className="flex-row justify-between mb-2">
+          <Text className="text-white">Name</Text>
+          <Text className="text-gray-500">{DBvalues.name}</Text>
         </View>
-        <View className="flex-row justify-between bg-gray-700 mt-2">
-          <Text className="text-gray-300">Email</Text>
-          <Text className="text-white">{DBvalues.email}</Text>
+        <View className="flex-row justify-between mt-2">
+          <Text className="text-white">Email</Text>
+          <Text className="text-gray-500">{DBvalues.email}</Text>
         </View>
       </View>
 
-      <Text className="text-gray-300 text-lg font-bold mt-8 mb-2">Preferences</Text>
-      <View className="bg-gray-700 px-4 py-2 rounded-lg">
+      <Text className="text-white text-lg font-bold mt-8 mb-2">Preferences</Text>
+      <View className="px-4 py-2 rounded-lg">
         <PreferenceItem
           text="Price"
           defaultValue={localValues.price}
@@ -131,19 +131,19 @@ export default function TabTwoScreen() {
         />
       </View>
 
-      <View className="flex-1 justify-end bg-gray-800">
+      <View className="flex-1 justify-end">
         {!isEditing ?
-        <View className="absolute bottom-0 right-0 bg-gray-800">
-          <TouchableOpacity onPress={enableEdit} className="p-4 bg-gray-700 rounded-full">
+        <View className="absolute bottom-0 right-0 ">
+          <TouchableOpacity onPress={enableEdit} className="p-4 bg-gray-1000 rounded-full">
             <Image source={profileEditButton} className="w-10 h-10" />
           </TouchableOpacity>
           {/* <Text className="text-gray-300 self-center mt-2 text-base">Edit</Text> */}
         </View>
           
           :
-          <View className="flex-row justify-around bg-gray-800">
+          <View className="flex-row justify-around bg-gray-1000">
             <TouchableOpacity onPress={discardEdit} className="">
-              <Text className="text-white text-lg">Discard</Text>
+              <Text className="text-white text-lg">Cancel</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={saveEdit} className="">
