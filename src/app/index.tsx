@@ -8,7 +8,7 @@ export default function App() {
     return (
         <SafeAreaView style={styles.container}>
             <Text>Welcome To Off Campus!</Text>
-            <Button title="Sign In" onPress={() => navigation.push("/auth" as any)} />
+            <Button title="Sign In" onPress={() => navigation.push("/auth")} />
         </SafeAreaView>
     );
 };
