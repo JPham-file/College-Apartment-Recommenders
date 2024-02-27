@@ -8,6 +8,7 @@ import {db} from "../lib/supabase";
 import {UserPrompt} from './UserPrompt';
 
 
+
 export default function FetchUser() {
   const {getToken} = useAuth();
   const {isLoaded, isSignedIn, user} = useUser();
