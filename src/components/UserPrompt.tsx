@@ -17,11 +17,7 @@ const majors = [
 ]
 
 const campuses = [
-<<<<<<< HEAD
   { label: 'Texas A&M University', value: 'Texas A&M University' }
-=======
-  {label: 'Texas A&M University', value: 'Texas A&M University', key: 'TAMU'}
->>>>>>> a086733fc7248695def5cc186c03b1377293820a
 ];
 
 // used for setting haptic, changing set Values
@@ -70,7 +66,7 @@ export const UserPrompt = () => {
       preferences,
     };
 
-    const result = await addStudent({userId, newStudentData});
+    const result = await addStudent({ userId, newStudentData });
     if (result.status !== 200 && result.status !== 204) {
       console.log('student added to DB', result);
       setError(result.statusText);
@@ -103,39 +99,30 @@ export const UserPrompt = () => {
 
 
       <View className="flex-row justify-between my-2">
-        <Text className="text-white">Campus:</Text>
+        <Text className="text-white self-center">Campus:</Text>
         <RNPickerSelect 
           onValueChange={campusChangeHandler} 
           value={campus}
           items={campuses} 
           darkTheme={true}
           //placeholder={{}} // LEAVE THIS;  disables the default "select item" option
-          style={{ inputIOS: { color: "gray" } }}
+          style={pickerSelectStyles}
           />
       </View>
 
 
       <View className="flex-row justify-between my-2">
-        <Text className="text-white">Major:</Text>
+        <Text className="text-white self-center">Major:</Text>
         <RNPickerSelect 
           onValueChange={setSelectedMajor} 
           value={selectedMajor}
           items={majors} 
           darkTheme={true}
           //placeholder={{}} // LEAVE THIS;  disables the default "select item" option
-          style={{ inputIOS: { color: "gray" } }}
+          style={pickerSelectStyles}
           />
       </View>
 
-<<<<<<< HEAD
-=======
-      <Text style={styles.label}>Campus:</Text>
-      <RNPickerSelect
-        onValueChange={campusChangeHandler}
-        items={campuses}
-        style={pickerSelectStyles}
-      />
->>>>>>> a086733fc7248695def5cc186c03b1377293820a
 
 
       <Text>Maximum budget: {budget}</Text>
@@ -195,6 +182,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF'
   },
 });
+
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
