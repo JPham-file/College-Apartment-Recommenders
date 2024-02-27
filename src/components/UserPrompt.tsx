@@ -5,6 +5,8 @@ import {TextInput, Button, StyleSheet} from "react-native";
 import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
 
+import {addStudent} from '@/src/components/addStudent';
+
 const majors = [
   {key: 'computer_science', label: 'Computer Science', value: 'computer_science'},
   {key: 'business', label: 'Business', value: 'business'},
@@ -30,6 +32,7 @@ const createValueChangeHandler = (
   };
 };
 
+
 export const UserPrompt = () => {
   const [budget, setBudget] = useState<number>(0);
   const [lastStepIndex, setLastStepIndex] = useState<number | null>(null);
@@ -41,8 +44,21 @@ export const UserPrompt = () => {
   const [email, setEmail] = useState<string>('');
   const [college, setCollege] = useState<string>('');
 
-  const handleSubmit = () => {
 
+  const handleSubmit = async () => {
+    const newStudentData = {
+      id: '2',
+      campus: 'Texas A&M University',
+      major: 'Computer Science',
+      schedule: 0,
+      oauth: 0,
+      preferences: 0
+    };
+
+    const result = await addStudent(newStudentData);
+    if (result) {
+      console.log('student added to DB', result);
+    }
   };
 
   const budgetChangeHandler = createValueChangeHandler(
