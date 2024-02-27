@@ -1,8 +1,8 @@
 import {Text, View} from '@/src/components/Themed';
-import React, { useState } from 'react';
-import { useRouter } from 'expo-router';
+import React, {useState} from 'react';
+import {useRouter} from 'expo-router';
 import {TextInput, Button, StyleSheet} from "react-native";
-import { useAuth } from '@clerk/clerk-expo';
+import {useAuth} from '@clerk/clerk-expo';
 
 import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
@@ -17,7 +17,11 @@ const majors = [
 ]
 
 const campuses = [
+<<<<<<< HEAD
   { label: 'Texas A&M University', value: 'Texas A&M University' }
+=======
+  {label: 'Texas A&M University', value: 'Texas A&M University', key: 'TAMU'}
+>>>>>>> a086733fc7248695def5cc186c03b1377293820a
 ];
 
 // used for setting haptic, changing set Values
@@ -41,7 +45,7 @@ const createValueChangeHandler = (
 
 
 export const UserPrompt = () => {
-  const { userId } = useAuth();
+  const {userId} = useAuth();
   const router = useRouter();
 
   const [budget, setBudget] = useState<number>(0);
@@ -66,7 +70,7 @@ export const UserPrompt = () => {
       preferences,
     };
 
-    const result = await addStudent({ userId, newStudentData });
+    const result = await addStudent({userId, newStudentData});
     if (result.status !== 200 && result.status !== 204) {
       console.log('student added to DB', result);
       setError(result.statusText);
@@ -123,6 +127,15 @@ export const UserPrompt = () => {
           />
       </View>
 
+<<<<<<< HEAD
+=======
+      <Text style={styles.label}>Campus:</Text>
+      <RNPickerSelect
+        onValueChange={campusChangeHandler}
+        items={campuses}
+        style={pickerSelectStyles}
+      />
+>>>>>>> a086733fc7248695def5cc186c03b1377293820a
 
 
       <Text>Maximum budget: {budget}</Text>
@@ -180,6 +193,29 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: '#cccccc',
     color: '#FFFFFF'
+  },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 4,
+    color: '#FFF',
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: '#FFF',
+    paddingRight: 30, // to ensure the text is never behind the icon
   },
 });
 
