@@ -1,15 +1,17 @@
 import { SafeAreaView, Text, Button, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { useAuth } from '@clerk/clerk-expo';
 
 export default function App() {
     const { isLoaded, userId } = useAuth();
     const navigation = useRouter();
 
-    if (isLoaded || userId) {
-        navigation.replace('/(tabs)');
-        return null;
-    }
+    useEffect(() => {
+        if (isLoaded || userId) {
+            navigation.replace('/(tabs)');
+        }
+    }, [isLoaded, userId]);
 
     return (
         <SafeAreaView style={styles.container}>

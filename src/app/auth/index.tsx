@@ -1,7 +1,8 @@
-import { Button, SafeAreaView, StyleSheet, View } from "react-native";
+import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 import SignInWithOAuth from "../../components/SignInWithOAuth";
 import FetchUser from "../../components/FetchUser";
+import { useState } from 'react';
 
 const SignOut = () => {
   const { isLoaded, signOut } = useAuth();
@@ -21,11 +22,14 @@ const SignOut = () => {
 };
 
 const AuthComponent = () => {
+  const [isDbAuthLoading, setDbAuthLoading] = useState<boolean>(false);
+
   return (
       <SafeAreaView style={styles.container}>
         <SignedIn>
-          <FetchUser />
-          <SignOut />
+          <FetchUser setLoading={setDbAuthLoading} />
+          {!isDbAuthLoading && <SignOut />}
+
         </SignedIn>
         <SignedOut>
           <SignInWithOAuth />
