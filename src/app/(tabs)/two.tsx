@@ -3,6 +3,7 @@ import { Text, View } from '@/src/components/Themed';
 import { Image, TouchableOpacity, TextInput, Button } from 'react-native';
 import { useState } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
+import { useUser } from "@clerk/clerk-expo";
 
 
 
@@ -33,6 +34,8 @@ const roommateOptions = [
 ];
 
 
+
+
 const PreferenceItem: React.FC<Preference> = ({ text, defaultValue, onValueChange, isEditing, data }) => (
   <View className="flex-row justify-between my-2">
     <Text className="text-white">{text}</Text>
@@ -49,11 +52,14 @@ const PreferenceItem: React.FC<Preference> = ({ text, defaultValue, onValueChang
 );
 
 export default function TabTwoScreen() {
-  const [isEditing, setIsEditing] = useState(false);
 
+  const { isLoaded, isSignedIn, user } = useUser();
+
+  const [isEditing, setIsEditing] = useState(false);
+  console.log(user)
   const [DBvalues, setDBValues] = useState({
-    'name': 'John Doe',
-    'email': 'johndoe@tamu.edu',
+    'name': user?.fullName,
+    'email': user?.primaryEmailAddress?.emailAddress,
     'price': "High",
     'campusProximity': "Low",
     'publicTransportation': "Medium",
@@ -61,12 +67,12 @@ export default function TabTwoScreen() {
   });
 
   const [localValues, setLocalValues] = useState({
-    'name': 'John Doe',
-    'email': 'johndoe@tamu.edu',
+    'name': user?.fullName,
+    'email': user?.primaryEmailAddress?.emailAddress,
     'price': "High",
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    'numRoommates': 2
+    'numRoommates': 2.
   });
 
   const enableEdit = () => {
@@ -83,7 +89,7 @@ export default function TabTwoScreen() {
     setDBValues(localValues);
     //commit values to database
   }
-
+  console.log()
   return (
     <View className="flex-1 p-4">
 
@@ -132,14 +138,14 @@ export default function TabTwoScreen() {
       </View>
 
       <View className="flex-1 justify-end">
-        {!isEditing ?
+        {!isEditing ? 
         <View className="absolute bottom-0 right-0 ">
           <TouchableOpacity onPress={enableEdit} className="p-4 bg-gray-1000 rounded-full">
             <Image source={profileEditButton} className="w-10 h-10" />
           </TouchableOpacity>
           {/* <Text className="text-gray-300 self-center mt-2 text-base">Edit</Text> */}
         </View>
-          
+        
           :
           <View className="flex-row justify-around bg-gray-1000">
             <TouchableOpacity onPress={discardEdit} className="">
