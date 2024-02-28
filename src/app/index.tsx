@@ -1,17 +1,16 @@
 import { SafeAreaView, Text, Button, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+import { SplashScreen, useRouter } from 'expo-router';
 import { useFonts } from 'expo-font';
-import AppLoading from 'expo-app-loading';
+
 
 export default function App() {
 
-  let [fontsLoaded] = useFonts({
-    'SpaceGrotesk-Bold': require('../../assets/fonts/SpaceGrotesk-Bold.ttf'),
-  });
+  
 
     const navigation = useRouter();
 
     return (
+        
       <SafeAreaView style={styles.container}>
           <Text style={styles.text}>Welcome</Text>
           <Text style={styles.text}>To</Text>
