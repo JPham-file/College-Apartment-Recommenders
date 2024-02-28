@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {Text, View, ActivityIndicator } from "react-native";
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import {SupabaseClient} from '@supabase/supabase-js';
-import {db} from "../lib/supabase";
+import {db} from "@/src/lib/supabase";
 
 import {UserPrompt} from './UserPrompt';
 import { useRouter } from 'expo-router';
@@ -78,7 +78,7 @@ export default function FetchUser({ setLoading }: FetchUserProps) {
   useEffect(() => {
     if (dbUser?.has_verified_preferences) {
       setLoading(false);
-      //router.replace('/(tabs)');
+      router.replace('/(tabs)');
     }
   }, [dbUser]);
 
