@@ -1,9 +1,12 @@
 import EditScreenInfo from '@/src/components/EditScreenInfo';
 import { Text, View } from '@/src/components/Themed';
 import { Image, TouchableOpacity, TextInput, Button } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
-import { useUser } from "@clerk/clerk-expo";
+import { useUser, useAuth } from "@clerk/clerk-expo";
+import {SupabaseClient} from '@supabase/supabase-js';
+import {db} from "../../lib/supabase";
+import { useLocalSearchParams } from "expo-router";
 
 
 
@@ -52,19 +55,24 @@ const PreferenceItem: React.FC<Preference> = ({ text, defaultValue, onValueChang
 );
 
 export default function TabTwoScreen() {
-
+  const props = useLocalSearchParams();
+  const {getToken} = useAuth();
   const { isLoaded, isSignedIn, user } = useUser();
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
 
   const [isEditing, setIsEditing] = useState(false);
-  console.log(user)
+ 
+  console.log(props)
+ 
   const [DBvalues, setDBValues] = useState({
     'name': user?.fullName,
     'email': user?.primaryEmailAddress?.emailAddress,
     'price': "High",
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    'numRoommates': 2
+    'numRoommates': parseInt(props.numRoommates[0])
   });
+
 
   const [localValues, setLocalValues] = useState({
     'name': user?.fullName,
@@ -72,7 +80,7 @@ export default function TabTwoScreen() {
     'price': "High",
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    'numRoommates': 2.
+    'numRoommates': parseInt(props.numRoommates[0])
   });
 
   const enableEdit = () => {
@@ -88,8 +96,40 @@ export default function TabTwoScreen() {
     setIsEditing(false);
     setDBValues(localValues);
     //commit values to database
+    if (supabase != null){
+      updateUserInDatabase(supabase);
+    }
+
   }
-  console.log()
+ 
+   
+  
+    const updateUserInDatabase = async (supabase: SupabaseClient) => {
+      if (!supabase) {
+        console.log('Supabase client is not initialized');
+        return;
+      }
+      const updatePreferences = {
+        budget: localValues.price,
+        roommates: localValues.numRoommates
+      };
+      console.log(`Preparing to update user data for email: `);
+  
+      const {error} = await supabase
+        .from("User")
+        .update({
+          id: user!.id,
+          preferences: updatePreferences,
+        })
+        .eq("id", user!.id);
+  
+      if (error) {
+        console.error("Error updating user in Supabase:", error.message);
+      }
+    };
+
+  
+
   return (
     <View className="flex-1 p-4">
 
@@ -108,7 +148,7 @@ export default function TabTwoScreen() {
       <Text className="text-white text-lg font-bold mt-8 mb-2">Preferences</Text>
       <View className="px-4 py-2 rounded-lg">
         <PreferenceItem
-          text="Price"
+          text="Budget"
           defaultValue={localValues.price}
           onValueChange={(val) => setLocalValues({ ...localValues, "price": val })}
           isEditing={isEditing}
