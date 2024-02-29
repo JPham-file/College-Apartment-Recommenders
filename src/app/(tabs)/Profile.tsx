@@ -1,9 +1,12 @@
 import { Text, View } from '@/src/components/Themed';
-import { Image, TouchableOpacity, Pressable } from 'react-native';
-import { useEffect, useState } from 'react';
+import { Image, TouchableOpacity, Pressable, ScrollView } from 'react-native';
+import { useState, useEffect } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
-import { useUser, useClerk } from "@clerk/clerk-expo";
+import { useUser, useClerk, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
+import {SupabaseClient} from '@supabase/supabase-js';
+import { useLocalSearchParams } from "expo-router";
+import {db} from "../../lib/supabase";
 import { useDatabaseUser } from '@/src/hooks/useDatabaseUser';
 
 interface Preference {
@@ -47,9 +50,13 @@ const PreferenceItem: React.FC<Preference> = ({ text, defaultValue, onValueChang
 );
 
 export default function TabTwoScreen() {
+  const props = useLocalSearchParams();
   const router = useRouter();
   const { signOut } = useClerk();
+  const {getToken} = useAuth();
+
   const { isLoaded, isSignedIn, user } = useUser();
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const { user: dbUser } = useDatabaseUser();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -59,7 +66,7 @@ export default function TabTwoScreen() {
     'price': "High",
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    'numRoommates': 2
+    'numRoommates': parseInt(props.numRoommates[0])
   });
 
   const [localValues, setLocalValues] = useState({
@@ -68,7 +75,7 @@ export default function TabTwoScreen() {
     'price': "High",
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    'numRoommates': 2.
+    'numRoommates': parseInt(props.numRoommates[0])
   });
 
   const enableEdit = () => {
@@ -84,14 +91,11 @@ export default function TabTwoScreen() {
     setIsEditing(false);
     setDBValues(localValues);
     //commit values to database
-  }
-
-  function performLogOut() {
-    signOut(() => {
-      router.push('/');
-    }).catch(err => {
-      console.error(err);
-    });
+    if (supabase != null){
+      updateUserInDatabase(supabase);
+    }else{
+      console.log("error updating user: supabase null")
+    }
   }
 
   return (
@@ -156,9 +160,27 @@ export default function TabTwoScreen() {
 
       <View className="flex flex-col justify-around">
         <View className="flex my-2">
-          {/* className="flex w-full rounded-full border border-red-500 items-center justify-center py-4" */}
-          <Pressable onPress={performLogOut}>
-            <Text className="text-red-500">Log Out</Text>
+          <Pressable
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingVertical: 16,
+              marginHorizontal: 'auto',
+              borderRadius: 9999,
+              borderWidth: 1,
+              borderColor: 'red',
+              width: '100%'
+            }}
+            onPress={() => {
+              signOut().then(() => {
+                router.replace('/');
+              }).catch((error) => {
+                console.log(error);
+              });
+            }}
+          >
+            <Text style={{ color: 'red' }}>Log Out</Text>
           </Pressable>
         </View>
         <View className="flex w-full justify-end py-2">
