@@ -94,17 +94,14 @@ export const UserPrompt = () => {
   const campusChangeHandler = (value: string) => setCampus(value);
 
   return (
-    <View className="flex-1 p-4 justify-center">
-
-
-
+    <View className="flex-1 p-4 justify-center h-screen">
       <View className="flex-row justify-between my-2">
         <Text className="text-white self-center">Campus:</Text>
         <RNPickerSelect 
           onValueChange={campusChangeHandler} 
           value={campus}
           items={campuses} 
-          darkTheme={true}
+          darkTheme
           //placeholder={{}} // LEAVE THIS;  disables the default "select item" option
           style={pickerSelectStyles}
           />
@@ -125,7 +122,7 @@ export const UserPrompt = () => {
 
 
 
-      <Text>Maximum budget: {budget}</Text>
+      <Text className="text-neutral-100">Maximum budget: {budget}</Text>
       <Slider
         style={styles.slider}
         minimumValue={300}
@@ -139,7 +136,7 @@ export const UserPrompt = () => {
       />
 
 
-      <Text>Number of Roommates {roommates}</Text>
+      <Text className="text-neutral-100">Number of Roommates {roommates}</Text>
       <Slider
         style={styles.slider}
         minimumValue={0}

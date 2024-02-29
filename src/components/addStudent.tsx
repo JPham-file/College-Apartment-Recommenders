@@ -19,7 +19,7 @@ export async function addStudent({ userId, newStudentData }: UpdateStudentParame
 
   const { error, status, statusText } = await supabase
     .from('User')
-    .update({ ...newStudentData })
+    .update({ ...newStudentData, has_verified_preferences: true })
     .eq('id', userId);
 
   if (error || (status !== 200 && status !== 204)) {

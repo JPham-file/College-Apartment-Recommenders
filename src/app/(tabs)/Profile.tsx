@@ -1,9 +1,10 @@
 import { Text, View } from '@/src/components/Themed';
 import { Image, TouchableOpacity, Pressable } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { useUser, useClerk } from "@clerk/clerk-expo";
 import { useRouter } from 'expo-router';
+import { useDatabaseUser } from '@/src/hooks/useDatabaseUser';
 
 interface Preference {
   text: string;
@@ -49,6 +50,7 @@ export default function TabTwoScreen() {
   const router = useRouter();
   const { signOut } = useClerk();
   const { isLoaded, isSignedIn, user } = useUser();
+  const { user: dbUser } = useDatabaseUser();
 
   const [isEditing, setIsEditing] = useState(false);
   const [DBvalues, setDBValues] = useState({
@@ -82,6 +84,14 @@ export default function TabTwoScreen() {
     setIsEditing(false);
     setDBValues(localValues);
     //commit values to database
+  }
+
+  function performLogOut() {
+    signOut(() => {
+      router.push('/');
+    }).catch(err => {
+      console.error(err);
+    });
   }
 
   return (
@@ -146,7 +156,8 @@ export default function TabTwoScreen() {
 
       <View className="flex flex-col justify-around">
         <View className="flex my-2">
-          <Pressable className="flex w-full rounded-full border border-red-500 items-center justify-center py-4" onPress={() => signOut(() => router.replace('/'))}>
+          {/* className="flex w-full rounded-full border border-red-500 items-center justify-center py-4" */}
+          <Pressable onPress={performLogOut}>
             <Text className="text-red-500">Log Out</Text>
           </Pressable>
         </View>

@@ -78,7 +78,7 @@ export default function FetchUser({ setLoading }: FetchUserProps) {
   useEffect(() => {
     if (dbUser?.has_verified_preferences) {
       setLoading(false);
-      router.replace('/(tabs)');
+      router.navigate('/(tabs)');
     }
   }, [dbUser]);
 
@@ -88,21 +88,17 @@ export default function FetchUser({ setLoading }: FetchUserProps) {
   }
 
   return (
-    <View>
+    <View className="flex-1 justify-center">
       {!dbUser
         ? (
-          <>
+          <View>
             <ActivityIndicator className="flex flex-row justify-center" size="large" color="#5eead4" />
-            <Text>Getting Your Profile Ready</Text>
-          </>
+            <Text className="text-neutral-100">Getting Your Profile Ready</Text>
+          </View>
         ) : (
-          <>
-            <UserPrompt/>
-            <Text>Hello {user.primaryEmailAddress?.emailAddress}, welcome to Off Campus!</Text>
-          </>
+          <UserPrompt/>
         )
       }
-
     </View>
   );
 }

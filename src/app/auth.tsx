@@ -1,7 +1,7 @@
-import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Button, View } from 'react-native';
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
-import SignInWithOAuth from "../../components/SignInWithOAuth";
-import FetchUser from "../../components/FetchUser";
+import SignInWithOAuth from "../components/SignInWithOAuth";
+import FetchUser from "../components/FetchUser";
 import { useState } from 'react';
 import { Stack } from 'expo-router';
 
@@ -12,7 +12,7 @@ const SignOut = () => {
   }
   return (
     <View>
-      <Button 
+      <Button
         title="Sign Out"
         onPress={() => {
           signOut();
@@ -26,24 +26,21 @@ const AuthComponent = () => {
   const [isDbAuthLoading, setDbAuthLoading] = useState<boolean>(false);
 
   return (
-    <>
+    <View className="flex h-full">
       <Stack.Screen
         options={{
           headerShown: false,
         }}
       />
 
-      <SafeAreaView className="flex">
-        <SignedIn>
-          <FetchUser setLoading={setDbAuthLoading} />
-          {!isDbAuthLoading && <SignOut />}
-
-        </SignedIn>
-        <SignedOut>
-          <SignInWithOAuth />
-        </SignedOut>
-      </SafeAreaView>
-    </>
+      <SignedIn>
+        <FetchUser setLoading={setDbAuthLoading} />
+        {!isDbAuthLoading && <SignOut />}
+      </SignedIn>
+      <SignedOut>
+        <SignInWithOAuth />
+      </SignedOut>
+    </View>
   );
 }
 

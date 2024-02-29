@@ -51,7 +51,7 @@ const SignInWithOAuth = () => {
     return (
       <View className="flex p-5 justify-center items-center -mr-5">
         <View className={`p-2 w-fit h-fit rounded-2xl ${borderColor}`}>
-          <Image key={item.hash} width={256} height={256} source={{ uri: item.uri }} className="rounded-2xl" />
+          <Image key={item.hash} width={256} height={256} source={{ uri: item.localUri! }} className="rounded-2xl" />
         </View>
       </View>
     );
@@ -71,7 +71,13 @@ const SignInWithOAuth = () => {
           renderItem={renderCarouselItem}
           autoPlay
           loop
-          scrollAnimationDuration={2000}
+          scrollAnimationDuration={1000}
+          mode="horizontal-stack"
+          modeConfig={{
+            snapDirection: 'left',
+            stackInterval: 50,
+            scaleInterval: 0.1
+          }}
         />
       </View>
 
