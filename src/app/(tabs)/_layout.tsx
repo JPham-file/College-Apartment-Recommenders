@@ -1,12 +1,11 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Tabs } from 'expo-router';
+import { useUser, useAuth } from '@clerk/clerk-expo';
 import { useState, useEffect } from 'react';
 import Colors from '@/src/constants/Colors';
 import { useColorScheme } from '@/src/components/useColorScheme';
 import { useClientOnlyValue } from '@/src/components/useClientOnlyValue';
-import { useUser, useAuth } from "@clerk/clerk-expo";
 import {SupabaseClient} from '@supabase/supabase-js';
 import {db} from "../../lib/supabase";
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -68,6 +67,7 @@ export default function TabLayout() {
     }, []);
 
 
+
   return (
     <Tabs
       screenOptions={{
@@ -79,31 +79,29 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          headerTitle: 'For You',
+          headerTitleAlign: 'center',
+          headerTitleStyle: { fontSize: 20 },
+          tabBarShowLabel: false,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="Map"
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="map-marker" color={color} />,
+          tabBarShowLabel: false,
+        }}
+      />
+      <Tabs.Screen
+        name="Profile"
         
         options={{
-          href : `/two?numRoommates=${userPref?.preferences.roommates}`,
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          href : `/Profile?numRoommates=${userPref?.preferences.roommates}`,
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="user-circle" color={color} />,
+          tabBarShowLabel: false,
         }}
       />
     </Tabs>

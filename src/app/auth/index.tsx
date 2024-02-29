@@ -1,27 +1,9 @@
-import { Button, SafeAreaView, StyleSheet, View } from "react-native";
-import { ClerkProvider, SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
+import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
+import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 import SignInWithOAuth from "../../components/SignInWithOAuth";
 import FetchUser from "../../components/FetchUser";
-import * as SecureStore from "expo-secure-store";
-
-const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
-
-const tokenCache = {
-  async getToken(key: string) {
-    try {
-      return SecureStore.getItemAsync(key);
-    } catch (err) {
-      return null;
-    }
-  },
-  async saveToken(key: string, value: string) {
-    try {
-      return SecureStore.setItemAsync(key, value);
-    } catch (err) {
-      return;
-    }
-  },
-};
+import { useState } from 'react';
+import { Stack } from 'expo-router';
 
 const SignOut = () => {
   const { isLoaded, signOut } = useAuth();
@@ -40,36 +22,29 @@ const SignOut = () => {
   );
 };
 
-export default function App() {
-  return (
+const AuthComponent = () => {
+  const [isDbAuthLoading, setDbAuthLoading] = useState<boolean>(false);
 
-      <SafeAreaView style={styles.container}>
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <SafeAreaView className="flex">
         <SignedIn>
-          <FetchUser />
-          <SignOut />
+          <FetchUser setLoading={setDbAuthLoading} />
+          {!isDbAuthLoading && <SignOut />}
+
         </SignedIn>
         <SignedOut>
           <SignInWithOAuth />
         </SignedOut>
       </SafeAreaView>
-
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#000", 
-    borderRadius: 4,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-});
+export default AuthComponent;

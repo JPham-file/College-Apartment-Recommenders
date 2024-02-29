@@ -1,18 +1,24 @@
 import "react-native-get-random-values";
 import React, {useEffect, useState} from "react";
-import {Text, View} from "react-native";
+import {Text, View, ActivityIndicator } from "react-native";
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import {SupabaseClient} from '@supabase/supabase-js';
-import {db} from "../lib/supabase";
+import {db} from "@/src/lib/supabase";
 
 import {UserPrompt} from './UserPrompt';
+import { useRouter } from 'expo-router';
+import { DatabaseUser } from '@/src/types/user';
 
+interface FetchUserProps {
+  setLoading: (value: boolean) => void;
+}
 
-
-export default function FetchUser() {
+export default function FetchUser({ setLoading }: FetchUserProps) {
   const {getToken} = useAuth();
   const {isLoaded, isSignedIn, user} = useUser();
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
+  const router = useRouter();
+  const [dbUser, setDbUser] = useState<DatabaseUser | null | undefined>(null);
 
   const updateUserInDatabase = async (supabase: SupabaseClient) => {
     if (!supabase) {
@@ -29,12 +35,17 @@ export default function FetchUser() {
 
     console.log(`Preparing to upsert user data for email: ${insertUser.email}`);
 
-    const {error} = await supabase
+    const { data, error} = await supabase
       .from("User")
       .upsert({
         id: user!.id,
         oauth: insertUser,
-      });
+      })
+      .select();
+
+    if (data) {
+      setDbUser(data[0]);
+    }
 
     if (error) {
       console.error("Error updating user in Supabase:", error.message);
@@ -43,6 +54,7 @@ export default function FetchUser() {
 
 
   useEffect(() => {
+    setLoading(true);
     const initSupabaseAndFetchUser = async () => {
       console.log("Init Supabase and Fetch User effect triggered");
       if (isLoaded && isSignedIn && user) {
@@ -63,18 +75,33 @@ export default function FetchUser() {
     initSupabaseAndFetchUser();
   }, [isLoaded, isSignedIn, user, getToken]);
 
+  useEffect(() => {
+    if (dbUser?.has_verified_preferences) {
+      setLoading(false);
+      router.replace('/(tabs)');
+    }
+  }, [dbUser]);
+
+
   if (!isLoaded || !isSignedIn) {
     return null;
   }
 
   return (
     <View>
-
-      <UserPrompt/>
-
-      <Text>
-        Hello {user.primaryEmailAddress?.emailAddress}, welcome to Off Campus!
-      </Text>
+      {!dbUser
+        ? (
+          <>
+            <ActivityIndicator className="flex flex-row justify-center" size="large" color="#5eead4" />
+            <Text>Getting Your Profile Ready</Text>
+          </>
+        ) : (
+          <>
+            <UserPrompt/>
+            <Text>Hello {user.primaryEmailAddress?.emailAddress}, welcome to Off Campus!</Text>
+          </>
+        )
+      }
 
     </View>
   );

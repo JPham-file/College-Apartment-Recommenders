@@ -1,26 +1,39 @@
 import { SafeAreaView, Text, Button, StyleSheet } from 'react-native';
-import { SplashScreen, useRouter } from 'expo-router';
-import { useFonts } from 'expo-font';
+import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { useAuth } from '@clerk/clerk-expo';
+import { Stack } from 'expo-router';
 
 
 export default function App() {
-
-  
-
+    const { isLoaded, userId } = useAuth();
     const navigation = useRouter();
 
+    useEffect(() => {
+        if (userId) {
+            navigation.replace('/(tabs)');
+        }
+    }, [isLoaded, userId]);
+
     return (
-        
-      <SafeAreaView style={styles.container}>
-          <Text style={styles.text}>Welcome</Text>
-          <Text style={styles.text}>To</Text>
-          <Text style={styles.text2}>Off Campus!</Text>
-          <Button
-            title="Sign In"
-            onPress={() => navigation.push("/auth")}
-            color="#1E90FF"
-          />
-      </SafeAreaView>
+        <>
+            <Stack.Screen
+              options={{
+                  headerShown: false,
+              }}
+            />
+
+            <SafeAreaView style={styles.container}>
+                <Text style={styles.text}>Welcome</Text>
+                <Text style={styles.text}>To</Text>
+                <Text style={styles.text2}>Off Campus!</Text>
+                <Button
+                    title="Sign In"
+                    onPress={() => navigation.push("./auth")}
+                    color="#1E90FF"
+                />
+            </SafeAreaView>
+        </>
     );
 };
 
