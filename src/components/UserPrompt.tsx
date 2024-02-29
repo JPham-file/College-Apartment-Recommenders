@@ -47,7 +47,7 @@ export const UserPrompt = () => {
   const [budget, setBudget] = useState<number>(0);
   const [campus, setCampus] = useState<string>('');
   const [selectedMajor, setSelectedMajor] = useState<string>('');
-  const [roommates, setRoommates] = useState<number>(0);
+  const [squareFootage, setSquareFootage] = useState<number>(0);
   const [college, setCollege] = useState<string>('');
 
   const [error, setError] = useState<string | null>(null);
@@ -55,8 +55,8 @@ export const UserPrompt = () => {
 
   const handleSubmit = async () => {
     const preferences = {
-      budget,
-      roommates,
+      'max_rent': budget,
+      'min_sqft': squareFootage,
     };
 
     const newStudentData = {
@@ -84,10 +84,10 @@ export const UserPrompt = () => {
     useState(-1)  // -1 will ensure first change to make haptic
   );
 
-  const roommatesChangeHandler = createValueChangeHandler(
+  const squareFootageChangeHandler = createValueChangeHandler(
     1,
     Haptics.ImpactFeedbackStyle.Light,
-    setRoommates,
+    setSquareFootage,
     useState(-1)  // -1 will ensure first change to make haptic
   );
 
@@ -120,8 +120,6 @@ export const UserPrompt = () => {
           />
       </View>
 
-
-
       <Text className="text-neutral-100">Maximum budget: {budget}</Text>
       <Slider
         style={styles.slider}
@@ -135,18 +133,17 @@ export const UserPrompt = () => {
         onValueChange={budgetChangeHandler}
       />
 
-
-      <Text className="text-neutral-100">Number of Roommates {roommates}</Text>
+      <Text className="text-neutral-100">Minimum Area: {squareFootage} sq ft</Text>
       <Slider
         style={styles.slider}
-        minimumValue={0}
-        maximumValue={5}
+        minimumValue={400}
+        maximumValue={2000}
         step={1}
-        value={roommates}
+        value={squareFootage}
         minimumTrackTintColor="#1fb28a"
         maximumTrackTintColor="#d3d3d3"
         thumbTintColor="#b9e4c9"
-        onValueChange={roommatesChangeHandler}
+        onValueChange={squareFootageChangeHandler}
       />
 
       <Button title="Submit" onPress={handleSubmit}/>
