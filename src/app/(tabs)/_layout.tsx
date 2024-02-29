@@ -99,7 +99,8 @@ export default function TabLayout() {
         
         options={{
           href : `/Profile?numRoommates=${userPref?.preferences.roommates}`,
-          headerShown: false,
+          headerTitleAlign: 'center',
+          headerTitleStyle: { fontSize: 20 },
           tabBarIcon: ({ color }) => <TabBarIcon name="user-circle" color={color} />,
           tabBarShowLabel: false,
         }}

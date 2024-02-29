@@ -87,6 +87,34 @@ export default function TabTwoScreen() {
     setLocalValues(DBvalues);
   };
 
+  const updateUserInDatabase = async (supabase: SupabaseClient) => {
+    if (!supabase) {
+      console.log('Supabase client is not initialized');
+      return;
+    }
+
+    const insertUser = {
+      first_name: user!.firstName,
+      last_name: user!.lastName,
+      email: user!.primaryEmailAddress?.emailAddress,
+      profile_icon: user!.imageUrl
+    };
+
+    console.log(`Preparing to upsert user data for email: ${insertUser.email}`);
+
+    const { data, error} = await supabase
+      .from("User")
+      .upsert({
+        id: user!.id,
+        oauth: insertUser,
+      })
+      .select();
+
+    if (error) {
+      console.error("Error updating user in Supabase:", error.message);
+    }
+  };
+
   const saveEdit = () => {
     setIsEditing(false);
     setDBValues(localValues);
@@ -161,17 +189,8 @@ export default function TabTwoScreen() {
       <View className="flex flex-col justify-around">
         <View className="flex my-2">
           <Pressable
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              paddingVertical: 16,
-              marginHorizontal: 'auto',
-              borderRadius: 9999,
-              borderWidth: 1,
-              borderColor: 'red',
-              width: '100%'
-            }}
+            className="flex border-2 border-red-400 py-3 justify-center items-center rounded-full"
+
             onPress={() => {
               signOut().then(() => {
                 router.replace('/');
@@ -180,7 +199,7 @@ export default function TabTwoScreen() {
               });
             }}
           >
-            <Text style={{ color: 'red' }}>Log Out</Text>
+            <Text className="text-red-400 font-bold">Log Out</Text>
           </Pressable>
         </View>
         <View className="flex w-full justify-end py-2">
