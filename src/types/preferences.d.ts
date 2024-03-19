@@ -1,4 +1,4 @@
 export interface UserPreference {
-  budget: number;
+  max_rent: number;
   roommates: number;
 }
