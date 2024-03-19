@@ -34,6 +34,12 @@ const roommateOptions = [
   { value: "5", label: '5' },
 ];
 
+const leaseTerms = [
+  { value: "6 Months", label: '6 Months' },
+  { value: "9 Months", label: '9 Months' },
+  { value: "12 Months", label: '12 Months' },
+];
+
 const PreferenceItem: React.FC<Preference> = ({ text, defaultValue, onValueChange, isEditing, data }) => (
   <View className="flex-row justify-between my-2">
     <Text className="text-white">{text}</Text>
@@ -75,7 +81,8 @@ export default function TabTwoScreen() {
     'price': "High",
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    'numRoommates': parseInt(props.numRoommates[0])
+    'numRoommates': parseInt(props.numRoommates[0]),
+    'leaseTerms': "6 Months"
   });
 
   const enableEdit = () => {
@@ -181,6 +188,15 @@ export default function TabTwoScreen() {
                 isEditing={isEditing}
                 data={roommateOptions}
               />
+
+              <PreferenceItem
+                text="Lease Term"
+                defaultValue={localValues.leaseTerms}
+                onValueChange={(val) => setLocalValues({ ...localValues, "leaseTerms": val })}
+                isEditing={isEditing}
+                data={leaseTerms}
+              />
+
             </View>
           </View>
         </View>
