@@ -81,13 +81,26 @@ export default function TabTwoScreen() {
     'numRoommates': dbUser?.preferences.roommates
 
   });
-
+  
   const enableEdit = () => {
     setIsEditing(true);
   };
 
+
+  const saveEdit = () => {
+    setIsEditing(false);
+    setDBValues(localValues);
+    //commit values to database
+    if (supabase != null){
+      updateUserInDatabase(supabase);
+    }else{
+      console.log("error updating user: supabase null")
+    }
+  }
+
   const discardEdit = () => {
     setIsEditing(false);
+    console.log(DBvalues)
     setLocalValues(DBvalues);
   };
 
@@ -110,7 +123,8 @@ export default function TabTwoScreen() {
 
   useEffect(() => {
     if (dbUser) {
-      setLocalValues({ ...localValues, numRoommates: dbUser.preferences.roommates, maxRent: dbUser.preferences.max_rent });
+      setDBValues({ ...localValues, numRoommates: dbUser.preferences.roommates, maxRent: dbUser.preferences.max_rent });
+      setLocalValues(DBvalues);
     }
   }, [dbUser]);
 
@@ -139,16 +153,6 @@ export default function TabTwoScreen() {
       }
     };
 
-  const saveEdit = () => {
-    setIsEditing(false);
-    setDBValues(localValues);
-    //commit values to database
-    if (supabase != null){
-      updateUserInDatabase(supabase);
-    }else{
-      console.log("error updating user: supabase null")
-    }
-  }
 
   return (
     <View className="flex justify-between h-full p-4">
