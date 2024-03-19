@@ -1,74 +1,99 @@
-import EditScreenInfo from '@/src/components/EditScreenInfo';
 import { Text, View } from '@/src/components/Themed';
-import { ScrollView, Image } from 'react-native';
+import { useUser } from '@clerk/clerk-expo';
+import { useCallback, useState } from 'react';
+import { FlatList, Image } from 'react-native';
+import { useFocusEffect } from 'expo-router';
+
+interface Apartment {
+  id: string;
+  name: string;
+  address: string;
+  price: string;
+  match: string; // Assuming match is a percentage stored as a number
+  photos: string[];
+  modelName: string;
+  modelImage: string;
+  rent: string;
+  score: number;
+}
 
 export default function TabOneScreen() {
+  const [apartments, setApartments] = useState<Apartment[]>([]);
+  const { user } = useUser();
 
-
-  const getMatchColorClass = (matchPercentage : number) => { 
+  const getMatchColorClass = (matchPercentage : number) => {
     //returns native wind color styling based on % match for each apartment
-    if (matchPercentage >= 90) return 'text-green-500'; 
-    if (matchPercentage >= 70) return 'text-yellow-300'; 
-    if (matchPercentage >= 50) return 'text-orange-500'; 
-    return 'text-red-600'; 
+    if (matchPercentage >= 90) return 'text-green-500';
+    if (matchPercentage >= 70) return 'text-yellow-300';
+    if (matchPercentage >= 50) return 'text-orange-500';
+    return 'text-red-600';
   };
 
-  const apartments = [
-    {
-      id: 1,
-      name: 'The Woodlands - Unit 6',
-      address: '1725 Harvey Mitchell Pkwy S, College Station, TX 77840',
-      price: '$650.00',
-      match: 95,
-    },
-    {
-      id: 2,
-      name: 'The London - Unit 831',
-      address: '601 Luther St W, College Station, TX 77840',
-      price: '$599.00',
-      match: 76,
-    },
-    {
-      id: 3,
-      name: 'Park West - Unit 512',
-      address: '1725 Harvey Mitchell Pkwy S, College Station, TX 77840',
-      price: '$650.00',
-      match: 55,
-    },
-    {
-      id: 4,
-      name: 'The Woodlands - Unit 6',
-      address: '1725 Harvey Mitchell Pkwy S, College Station, TX 77840',
-      price: '$650.00',
-      match: 47,
-    },
-    // ... add more apartments as needed
-  ];
- 
+  const fetchUserPreferences = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/get_recommendations', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ID': user!.id,
+        },
+      });
+
+      if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response failure');
+      }
+      const data = await response.json();
+
+      const maxScore = data[0].score;
+
+      const transformedApartments = data.map((apartment: { id: any; name: any; address: any; price: any; score: any, photos: string[], modelImage: string, modelName: string, rent: string }) => ({
+        ...apartment,
+        match: Number((apartment.score / maxScore) * 100).toFixed(0).toString(),
+      }));
+
+      setApartments(transformedApartments);
+    } catch (error) {
+      console.error('There was an error fetching the user preferences:', error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        fetchUserPreferences();
+      }
+    }, [user])
+  );
+
   return (
     <View className="flex-1 items-center justify-center">
-     <ScrollView className="flex-grow w-11/12">
-        {apartments.map((apartment) => (
-          <View key={apartment.id} className="mb-4 px-4 py-2 border-b border-gray-300">
-            <Image
-              source={require( '../../../assets/images/exampleapartmentpic.jpeg')} 
-              className="w-full h-40 rounded-lg" // Image takes full width
-              resizeMode="cover" // Ensures the image covers the area without stretching
-            />
-            <View className="py-2">
-              <Text className="text-lg font-semibold">{apartment.name}</Text>
-              <Text className="text-gray-500">{apartment.address.substring(0, apartment.address.indexOf(','))},</Text> 
-              <Text className="text-gray-500">{apartment.address.substring( apartment.address.indexOf(',') + 2)}</Text>
-              <View className="flex-row justify-between items-center pt-2">
-                <Text className="text-base font-semibold ">{apartment.price} / month</Text>
-                <Text className={`font-bold text-lg ${getMatchColorClass(apartment.match)}`}>{apartment.match}%</Text>
+      <FlatList
+        data={apartments}
+        className="flex-grow w-11/12"
+        keyExtractor={( item, index ) => `${item.id}-${index}`}
+        renderItem={({ item: apartment, index }) => (
+            <View className="mb-4 px-4 py-2 border-b border-gray-300">
+              <Image
+                source={{ uri: (apartment.modelImage && apartment.modelImage?.length !== 0) ? apartment.modelImage : apartment.photos[0] }}
+                className="w-full h-40 rounded-lg" // Image takes full width
+                resizeMode="cover" // Ensures the image covers the area without stretching
+              />
+              <View className="py-2">
+                <Text className="text-lg font-semibold">{apartment.name} - {apartment.modelName}</Text>
+                <Text className="text-gray-500">{apartment.address.substring(apartment.address.indexOf(','))}</Text>
+                <View className="flex-row justify-between items-center pt-2">
+                  <Text className="text-base font-semibold ">${apartment.rent} / month</Text>
+                  <Text className={`font-bold text-lg ${getMatchColorClass(Number(apartment.match))}`}>{apartment.match}%</Text>
+                </View>
               </View>
             </View>
-          </View>
-        ))}
-      </ScrollView>
-      
-    
+          )}
+      >
+
+      </FlatList>
+
+
     </View>
   );
 }

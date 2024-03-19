@@ -1,14 +1,31 @@
 import {supabase} from "@/src/components/supabaseClient";
 
-export async function addStudent(newStudentData) {
-  const {data, error} = await supabase
-    .from('User')
-    .insert([newStudentData]);
+export interface UpdateStudentParameters {
+  userId: string | null | undefined;
+  newStudentData: {
+    campus: string;
+    major: string;
+    schedule: any;
+    preferences: {
+      [key: string]: any;
+    }
+  }
+}
 
-  if (error) {
-    console.error('Error inserting data: ', error);
-    return null;
+export async function addStudent({ userId, newStudentData }: UpdateStudentParameters ) {
+  if (!userId) {
+    return { status: 403, statusText: 'User not provided' }
   }
 
-  return data;
+  const { error, status, statusText } = await supabase
+    .from('User')
+    .update({ ...newStudentData, has_verified_preferences: true })
+    .eq('id', userId);
+
+  if (error || (status !== 200 && status !== 204)) {
+    console.error('Error inserting data: ', error);
+    return { error, status, statusText };
+  }
+
+  return { status, statusText };
 }

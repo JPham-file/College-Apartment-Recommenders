@@ -1,12 +1,13 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
-
+import { Tabs } from 'expo-router';
+import { useUser, useAuth } from '@clerk/clerk-expo';
+import { useState, useEffect } from 'react';
 import Colors from '@/src/constants/Colors';
 import { useColorScheme } from '@/src/components/useColorScheme';
 import { useClientOnlyValue } from '@/src/components/useClientOnlyValue';
-
+import {SupabaseClient} from '@supabase/supabase-js';
+import {db} from "../../lib/supabase";
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -15,8 +16,57 @@ function TabBarIcon(props: {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
+
+
+interface IPref {
+  preferences: {
+    roommates : number
+  }
+}
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+
+  const {getToken} = useAuth();
+  const { isLoaded, isSignedIn, user } = useUser();
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
+  const [userPref, setUserPref] = useState<IPref>()
+ 
+
+  useEffect(() => {
+    const initSupabaseAndFetchUser = async () => {
+      console.log("Init Supabase and Fetch User effect triggered");
+      if (isLoaded && isSignedIn && user) {
+        console.log("User is loaded and signed in, attempting to get token...");
+        const token = await getToken({template: "supabase-jwt-token"});
+        console.log(`Token received: ${token ? "Yes" : "No"}`);
+        const initializedSupabase = await db(token!);
+        console.log("Supabase client initialized:", !!initializedSupabase);
+     
+        setSupabase(initializedSupabase)
+        if (initializedSupabase){
+          const {data, error} = await initializedSupabase
+          .from("User")
+          .select('preferences')
+          .eq("id", user!.id );
+    
+          if (error) {
+            console.error("Error updating user in Supabase:", error.message);
+            return;
+          }
+      
+          setUserPref({
+            "preferences": data[0].preferences
+          })
+        }
+        else{
+          console.log("error loading user preferences from Supabase, (supabase null)")
+        }
+      }
+    };
+    initSupabaseAndFetchUser();
+    }, []);
+
+
 
   return (
     <Tabs
@@ -29,29 +79,30 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          headerTitle: 'For You',
+          headerTitleAlign: 'center',
+          headerTitleStyle: { fontSize: 20 },
+          tabBarShowLabel: false,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="Map"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="map-marker" color={color} />,
+          tabBarShowLabel: false,
+        }}
+      />
+      <Tabs.Screen
+        name="Profile"
+        
+        options={{
+          href : `/Profile?numRoommates=${userPref?.preferences.roommates}`,
+          headerTitleAlign: 'center',
+          headerTitleStyle: { fontSize: 20 },
+          tabBarIcon: ({ color }) => <TabBarIcon name="user-circle" color={color} />,
+          tabBarShowLabel: false,
         }}
       />
     </Tabs>

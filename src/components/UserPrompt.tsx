@@ -1,17 +1,24 @@
 import {Text, View} from '@/src/components/Themed';
-import React, {useCallback, useState} from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
 import {TextInput, Button, StyleSheet} from "react-native";
+import { useAuth } from '@clerk/clerk-expo';
 
 import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
 
 import {addStudent} from '@/src/components/addStudent';
+import RNPickerSelect from 'react-native-picker-select';
 
 const majors = [
-  {key: 'computer_science', label: 'Computer Science', value: 'computer_science'},
-  {key: 'business', label: 'Business', value: 'business'},
-  {key: 'engineering', label: 'Engineering', value: 'engineering'}
+  { label: 'Computer Science', value: 'Computer Science'},
+  { label: 'Business', value: 'Business'},
+  { label: 'Electrical Engineering', value: 'Electrical Engineering'}
 ]
+
+const campuses = [
+  { label: 'Texas A&M University', value: 'Texas A&M University' }
+];
 
 // used for setting haptic, changing set Values
 const createValueChangeHandler = (
@@ -34,31 +41,40 @@ const createValueChangeHandler = (
 
 
 export const UserPrompt = () => {
-  const [budget, setBudget] = useState<number>(0);
-  const [lastStepIndex, setLastStepIndex] = useState<number | null>(null);
-  const [selectedMajor, setSelectedMajor] = useState(null);
-  const [roommates, setRoommates] = useState<number>(0);
+  const { userId } = useAuth();
+  const router = useRouter();
 
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
+  const [budget, setBudget] = useState<number>(0);
+  const [campus, setCampus] = useState<string>('');
+  const [selectedMajor, setSelectedMajor] = useState<string>('');
+  const [squareFootage, setSquareFootage] = useState<number>(0);
   const [college, setCollege] = useState<string>('');
+
+  const [error, setError] = useState<string | null>(null);
 
 
   const handleSubmit = async () => {
-    const newStudentData = {
-      id: '2',
-      campus: 'Texas A&M University',
-      major: 'Computer Science',
-      schedule: 0,
-      oauth: 0,
-      preferences: 0
+    const preferences = {
+      'max_rent': budget,
+      'min_sqft': squareFootage,
     };
 
-    const result = await addStudent(newStudentData);
-    if (result) {
+    const newStudentData = {
+      campus,
+      major: selectedMajor,
+      schedule: null,
+      preferences,
+    };
+
+    const result = await addStudent({ userId, newStudentData });
+    if (result.status !== 200 && result.status !== 204) {
       console.log('student added to DB', result);
+      setError(result.statusText);
+      return;
     }
+
+    setError(null);
+    router.replace('/(tabs)');
   };
 
   const budgetChangeHandler = createValueChangeHandler(
@@ -68,49 +84,43 @@ export const UserPrompt = () => {
     useState(-1)  // -1 will ensure first change to make haptic
   );
 
-  const roommatesChangeHandler = createValueChangeHandler(
+  const squareFootageChangeHandler = createValueChangeHandler(
     1,
     Haptics.ImpactFeedbackStyle.Light,
-    setRoommates,
+    setSquareFootage,
     useState(-1)  // -1 will ensure first change to make haptic
   );
 
+  const campusChangeHandler = (value: string) => setCampus(value);
+
   return (
-    <View className="flex-1 items-center justify-center" style={styles.container}>
+    <View className="flex-1 p-4 justify-center h-screen">
+      <View className="flex-row justify-between my-2">
+        <Text className="text-white">Campus:</Text>
+        <RNPickerSelect 
+          onValueChange={campusChangeHandler} 
+          value={campus}
+          items={campuses} 
+          darkTheme
+          //placeholder={{}} // LEAVE THIS;  disables the default "select item" option
+          style={{ inputIOS: { color: "gray" } }}
+          />
+      </View>
 
-      <Text style={styles.label}>First Name:</Text>
-      <TextInput
-        style={styles.input}
-        value={firstName}
-        onChange={setFirstName}
-        placeholder="First Name:"
-      />
 
-      <Text style={styles.label}>Last Name:</Text>
-      <TextInput
-        style={styles.input}
-        value={lastName}
-        onChange={setLastName}
-        placeholder="Last Name:"
-      />
+      <View className="flex-row justify-between my-2">
+        <Text className="text-white">Major:</Text>
+        <RNPickerSelect 
+          onValueChange={setSelectedMajor} 
+          value={selectedMajor}
+          items={majors} 
+          darkTheme={true}
+          //placeholder={{}} // LEAVE THIS;  disables the default "select item" option
+          style={{ inputIOS: { color: "gray" } }}
+          />
+      </View>
 
-      <Text style={styles.label}>Email:</Text>
-      <TextInput
-        style={styles.input}
-        value={email}
-        onChange={setEmail}
-        placeholder="Email:"
-      />
-
-      <Text style={styles.label}>Major:</Text>
-      <TextInput
-        style={styles.input}
-        value={selectedMajor}
-        onChange={setSelectedMajor}
-        placeholder="Enter your Major:"
-      />
-
-      <Text>Maximum budget: {budget}</Text>
+      <Text className="text-neutral-100">Maximum budget: {budget}</Text>
       <Slider
         style={styles.slider}
         minimumValue={300}
@@ -123,18 +133,17 @@ export const UserPrompt = () => {
         onValueChange={budgetChangeHandler}
       />
 
-
-      <Text>Number of Roommates {roommates}</Text>
+      <Text className="text-neutral-100">Minimum Area: {squareFootage} sq ft</Text>
       <Slider
         style={styles.slider}
-        minimumValue={0}
-        maximumValue={5}
+        minimumValue={400}
+        maximumValue={2000}
         step={1}
-        value={roommates}
+        value={squareFootage}
         minimumTrackTintColor="#1fb28a"
         maximumTrackTintColor="#d3d3d3"
         thumbTintColor="#b9e4c9"
-        onValueChange={roommatesChangeHandler}
+        onValueChange={squareFootageChangeHandler}
       />
 
       <Button title="Submit" onPress={handleSubmit}/>
