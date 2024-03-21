@@ -34,7 +34,13 @@ function OptionsButton({onPress}: {
   onPress: () => void
 }) {
   return (
-    <TouchableOpacity onPress={onPress} style={{padding: 10, backgroundColor: 'lightblue'}}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        padding: 10,
+        backgroundColor: 'rgb(95,169,234)',
+        borderRadius: 10}}
+    >
       <Text>Lease Filter</Text>
     </TouchableOpacity>
   );
@@ -47,7 +53,14 @@ function OptionsModal({visible, options, onSelect, onClose}: OptionsModalProps) 
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)'}}>
         <View style={{backgroundColor: 'white', padding: 20, borderRadius: 10}}>
           {options.map((option, index) => (
-            <TouchableOpacity key={index} onPress={() => onSelect(option)} style={{padding: 10}}>
+            <TouchableOpacity
+              key={index}
+              onPress={() => {
+                onSelect(option)
+                console.log(`User Pressed Lease Option: ${option}`)
+              }}
+              style={{padding: 10}}
+            >
               <Text>{option}</Text>
             </TouchableOpacity>
           ))}
