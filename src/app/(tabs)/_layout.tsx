@@ -57,7 +57,6 @@ function OptionsModal({visible, options, onSelect, onClose}: OptionsModalProps) 
               key={index}
               onPress={() => {
                 onSelect(option)
-                console.log(`User Pressed Lease Option: ${option}`)
               }}
               style={{padding: 10}}
             >
