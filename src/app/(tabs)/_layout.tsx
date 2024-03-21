@@ -90,13 +90,13 @@ export default function TabLayout() {
 
   useEffect(() => {
     const initSupabaseAndFetchUser = async () => {
-      console.log("Init Supabase and Fetch User effect triggered");
+
       if (isLoaded && isSignedIn && user) {
-        console.log("User is loaded and signed in, attempting to get token...");
+
         const token = await getToken({template: "supabase-jwt-token"});
-        console.log(`Token received: ${token ? "Yes" : "No"}`);
+
         const initializedSupabase = await db(token!);
-        console.log("Supabase client initialized:", !!initializedSupabase);
+
 
         setSupabase(initializedSupabase)
         if (initializedSupabase) {
