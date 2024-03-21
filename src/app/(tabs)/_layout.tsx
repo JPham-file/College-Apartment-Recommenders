@@ -83,6 +83,7 @@ interface IPref {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
+
   const {getToken} = useAuth();
   const {isLoaded, isSignedIn, user} = useUser();
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);

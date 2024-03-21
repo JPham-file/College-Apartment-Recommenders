@@ -8,7 +8,6 @@ interface Apartment {
   id: string;
   name: string;
   address: string;
-  price: string;
   match: string; // Assuming match is a percentage stored as a number
   photos: string[];
   modelName: string;
@@ -20,6 +19,7 @@ interface Apartment {
 export default function TabOneScreen() {
   const [apartments, setApartments] = useState<Apartment[]>([]);
   const { user } = useUser();
+  const maxScore = 600000;
 
   const getMatchColorClass = (matchPercentage : number) => {
     //returns native wind color styling based on % match for each apartment
@@ -31,7 +31,7 @@ export default function TabOneScreen() {
 
   const fetchUserPreferences = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:5000/get_recommendations', {
+      const response = await fetch('http://10.229.122.6:5000/get_recommendations', { //change this line to your ip
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ export default function TabOneScreen() {
 
       if (!response.ok) {
         console.error(response)
-        throw new Error('Network response failure');
+        throw new Error('Network response failure: make sure to change IP to your machine IP');
       }
       const data = await response.json();
 
@@ -66,6 +66,8 @@ export default function TabOneScreen() {
     }, [user])
   );
 
+
+
   return (
     <View className="flex-1 items-center justify-center">
       <FlatList
@@ -83,7 +85,7 @@ export default function TabOneScreen() {
                 <Text className="text-lg font-semibold">{apartment.name} - {apartment.modelName}</Text>
                 <Text className="text-gray-500">{apartment.address.substring(apartment.address.indexOf(','))}</Text>
                 <View className="flex-row justify-between items-center pt-2">
-                  <Text className="text-base font-semibold ">${apartment.rent} / month</Text>
+                <Text className="text-base font-semibold ">${apartment.rent} / month</Text>
                   <Text className={`font-bold text-lg ${getMatchColorClass(Number(apartment.match))}`}>{apartment.match}%</Text>
                 </View>
               </View>

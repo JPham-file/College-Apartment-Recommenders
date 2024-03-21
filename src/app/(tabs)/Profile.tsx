@@ -34,17 +34,21 @@ const roommateOptions = [
   { value: "5", label: '5' },
 ];
 
+
 const leaseTerms = [
   { value: "6 Months", label: '6 Months' },
   { value: "9 Months", label: '9 Months' },
   { value: "12 Months", label: '12 Months' },
 ];
 
+const maxRentOptions = Array.from({ length: (4000 - 300) / 100 + 1 }, (_, i) => ({ value: `${300 + i * 100}`, label: `${300 + i * 100}` }));
+
+
 const PreferenceItem: React.FC<Preference> = ({ text, defaultValue, onValueChange, isEditing, data }) => (
   <View className="flex-row justify-between my-2">
     <Text className="text-white">{text}</Text>
     <RNPickerSelect
-      onValueChange={(val: string) => onValueChange(val)}
+      onValueChange={ onValueChange}
       items={data}
       value={defaultValue}
       disabled={!isEditing}
@@ -56,71 +60,43 @@ const PreferenceItem: React.FC<Preference> = ({ text, defaultValue, onValueChang
 );
 
 export default function TabTwoScreen() {
-  const props = useLocalSearchParams();
   const router = useRouter();
   const { signOut } = useClerk();
   const {getToken} = useAuth();
-
+  
   const { isLoaded, isSignedIn, user } = useUser();
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const { user: dbUser } = useDatabaseUser();
+ 
 
   const [isEditing, setIsEditing] = useState(false);
   const [DBvalues, setDBValues] = useState({
     'name': user?.fullName,
     'email': user?.primaryEmailAddress?.emailAddress,
-    'price': "High",
+    'maxRent': dbUser?.preferences.max_rent,
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    'numRoommates': parseInt(props.numRoommates[0])
+    'numRoommates': dbUser?.preferences.roommates
   });
-
+  
   const [localValues, setLocalValues] = useState({
     'name': user?.fullName,
     'email': user?.primaryEmailAddress?.emailAddress,
-    'price': "High",
+    'maxRent': dbUser?.preferences.max_rent,
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    'numRoommates': parseInt(props.numRoommates[0]),
+    //'numRoommates': parseInt(props.numRoommates[0]),
+    'numRoommates': dbUser?.preferences.roommates,
     'leaseTerms': "6 Months"
   });
+    
 
+  });
+  
   const enableEdit = () => {
     setIsEditing(true);
   };
 
-  const discardEdit = () => {
-    setIsEditing(false);
-    setLocalValues(DBvalues);
-  };
-
-  const updateUserInDatabase = async (supabase: SupabaseClient) => {
-    if (!supabase) {
-      console.log('Supabase client is not initialized');
-      return;
-    }
-
-    const insertUser = {
-      first_name: user!.firstName,
-      last_name: user!.lastName,
-      email: user!.primaryEmailAddress?.emailAddress,
-      profile_icon: user!.imageUrl
-    };
-
-    console.log(`Preparing to upsert user data for email: ${insertUser.email}`);
-
-    const { data, error} = await supabase
-      .from("User")
-      .upsert({
-        id: user!.id,
-        oauth: insertUser,
-      })
-      .select();
-
-    if (error) {
-      console.error("Error updating user in Supabase:", error.message);
-    }
-  };
 
   const saveEdit = () => {
     setIsEditing(false);
@@ -132,6 +108,62 @@ export default function TabTwoScreen() {
       console.log("error updating user: supabase null")
     }
   }
+
+  const discardEdit = () => {
+    setIsEditing(false);
+    console.log(DBvalues)
+    setLocalValues(DBvalues);
+  };
+
+
+  useEffect(() => {
+    const initSupabaseAndFetchUser = async () => {
+      console.log("Init Supabase and Fetch User effect triggered");
+      if (isLoaded && isSignedIn && user) {
+        console.log("User is loaded and signed in, attempting to get token...");
+        const token = await getToken({template: "supabase-jwt-token"});
+        console.log(`Token received: ${token ? "Yes" : "No"}`);
+        const initializedSupabase = await db(token!);
+        console.log("Supabase client initialized:", !!initializedSupabase);
+        setSupabase(initializedSupabase)
+        //setLocalValues({ ...localValues, "numRoommates": dbUser?.preferences.roommates })
+      }
+    };
+    initSupabaseAndFetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (dbUser) {
+      setDBValues({ ...localValues, numRoommates: dbUser.preferences.roommates, maxRent: dbUser.preferences.max_rent });
+      setLocalValues(DBvalues);
+    }
+  }, [dbUser]);
+
+
+    const updateUserInDatabase = async (supabase: SupabaseClient) => {
+      if (!supabase) {
+        console.log('Supabase client is not initialized');
+        return;
+      }
+      const updatePreferences = {
+        max_rent: localValues.maxRent,
+        roommates: localValues.numRoommates
+      };
+      console.log(`Preparing to update user data for email: `);
+  
+      const {error} = await supabase
+        .from("User")
+        .update({
+          id: user!.id,
+          preferences: updatePreferences,
+        })
+        .eq("id", user!.id);
+  
+      if (error) {
+        console.error("Error updating user in Supabase:", error.message);
+      }
+    };
+
 
   return (
     <View className="flex justify-between h-full p-4">
@@ -161,11 +193,11 @@ export default function TabTwoScreen() {
             <Text className="text-white text-lg font-bold">Preferences</Text>
             <View className="px-4 py-2 rounded-lg">
               <PreferenceItem
-                text="Price"
-                defaultValue={localValues.price}
-                onValueChange={(val) => setLocalValues({ ...localValues, "price": val })}
+                text="Max Rent"
+                defaultValue={localValues.maxRent?.toString() || "0"}
+                onValueChange={(val) => setLocalValues({ ...localValues, "maxRent": parseInt(val) })}
                 isEditing={isEditing}
-                data = {priorityOptions}
+                data = {maxRentOptions}
               />
               <PreferenceItem
                 text="Campus Proximity"
@@ -183,7 +215,7 @@ export default function TabTwoScreen() {
               />
               <PreferenceItem
                 text="Number of Roommates"
-                defaultValue={localValues.numRoommates.toString()}
+                defaultValue={localValues.numRoommates?.toString() || "0"}
                 onValueChange={(val) => setLocalValues({ ...localValues, "numRoommates": parseInt(val) })}
                 isEditing={isEditing}
                 data={roommateOptions}
