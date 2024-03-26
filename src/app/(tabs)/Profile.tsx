@@ -91,8 +91,7 @@ export default function TabTwoScreen() {
   });
     
 
-  });
-  
+
   const enableEdit = () => {
     setIsEditing(true);
   };
