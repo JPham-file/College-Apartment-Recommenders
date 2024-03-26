@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Path, Circle } from 'react-native-svg';
 import classNames from 'classnames';
-import { addSkeleton } from '@/src/lib/skeleton';
+import { addSkeleton, skeleton } from '@/src/lib/skeleton';
 
 export interface MatchPercentageBarProps {
   percentage: number;
@@ -24,14 +24,13 @@ const getMatchColorClass = (matchPercentage : number): { className: string, circ
 const createArc = (percentage: number, radius: number) => {
   if (percentage === 100) percentage = 99.999
   const a = percentage*2*Math.PI/100 // angle (in radian) depends on percentage
-  const r = radius // radius of the circle
-  var rx = r,
-    ry = r,
-    xAxisRotation = 0,
-    largeArcFlag = 1,
-    sweepFlag = 1,
-    x = r + r*Math.sin(a),
-    y = r - r*Math.cos(a)
+  const rx = radius;
+  const ry = radius;
+  const xAxisRotation = 0;
+  const x = radius + radius * Math.sin(a);
+  const y = radius - radius * Math.cos(a);
+  const sweepFlag = 1;
+  let largeArcFlag;
   if (percentage <= 50){
     largeArcFlag = 0;
   }else{
@@ -47,28 +46,18 @@ const MatchPercentageBar = (props: MatchPercentageBarProps) => {
     ? { className: null, circle: { primary: '#d4d4d4', secondary: '#d4d4d4' } }
     : getMatchColorClass(percentage);
   const percentageClass = addSkeleton(classNames('font-bold text-2xl', colorClasses.className), !!isSkeletonLoading);
+  const percentContainerClass = addSkeleton('rounded-full', !!isSkeletonLoading, false);
+  const containerClass = classNames('flex flex-col w-24 justify-center items-center mx-2', className);
 
   return (
-    <View className={`flex flex-col w-24 justify-center items-center mx-2 ${className}`}>
-      <Svg height="100%" width="96" viewBox="0 0 96 96" className="absolute left-0 top-0">
-        <Circle
-          cx="48"
-          cy="48"
-          r="48"
-          fill={colorClasses.circle.secondary}
-        />
-        <Path d={`M 48 48 L 48 0 ${createArc(percentage, 48)}`} fill={colorClasses.circle.primary} />
-        <Circle
-          cx="48"
-          cy="48"
-          r="37"
-          fill={fill}
-          strokeWidth={"6"}
-          strokeOpacity={100}
-          stroke={fill}
-        />
+    <View className={containerClass}>
+      <Svg height="100%" width="96" viewBox="-6 -3 108 108" className="absolute left-0 top-0">
+        <Path d={`M 48 0 ${createArc(100, 48)}`} fill="none" stroke={colorClasses.circle.secondary} strokeWidth={12} strokeLinecap="round" />
+        <Path d={`M 48 0 ${createArc(percentage, 48)}`} fill="none" stroke={colorClasses.circle.primary} strokeWidth={12} strokeLinecap="round" />
       </Svg>
-      <Text className={percentageClass}>{percentage}%</Text>
+      <View className={percentContainerClass}>
+        <Text className={percentageClass}>{percentage}%</Text>
+      </View>
     </View>
   );
 };

@@ -2,7 +2,7 @@ import { ApartmentUnitRecommendation } from '@/src/types';
 import React from 'react';
 import { View, Text } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons/';
 
 export interface MatchDetailProps {
   apartment: ApartmentUnitRecommendation;
@@ -12,10 +12,6 @@ export interface MatchDetailProps {
 const MatchDetailTable = (props: MatchDetailProps) => {
   const { apartment, delayOffset = 50 } = props;
   const { details, squareFeet } = apartment;
-
-  const renderFeatures = () => {
-
-  }
 
   return (
     <View className="flex flex-row my-4 p-2 shadow justify-around items-center">
@@ -28,7 +24,7 @@ const MatchDetailTable = (props: MatchDetailProps) => {
         <Text className="">{details[1]}</Text>
       </View>
       <View className="flex flex-row gap-2 items-end">
-        <FontAwesome name="bath" size={20} />
+        <FontAwesome5 name="ruler-combined" size={20} />
         <Text className="">{squareFeet} sqft</Text>
       </View>
     </View>

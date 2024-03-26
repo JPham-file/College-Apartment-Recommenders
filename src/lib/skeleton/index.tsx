@@ -36,4 +36,6 @@ export const SkeletonAnimated = ({ children, isLoading }: PropsWithChildren<skel
   );
 }
 
-export const addSkeleton = (className: string, isLoading: boolean) => classNames(className, { 'bg-neutral-300 text-neutral-300 border-0': isLoading })
+export const skeleton = (isLoading: boolean, isTextPresent: boolean = true) => classNames({ 'bg-neutral-300': isLoading && !isTextPresent, 'text-transparent rounded-full': isLoading && isTextPresent });
+
+export const addSkeleton = (className: string, isLoading: boolean, isTextPresent: boolean = true) => classNames(className, skeleton(isLoading, isTextPresent));
