@@ -34,6 +34,13 @@ const roommateOptions = [
   { value: "5", label: '5' },
 ];
 
+
+const leaseTerms = [
+  { value: "6 Months", label: '6 Months' },
+  { value: "9 Months", label: '9 Months' },
+  { value: "12 Months", label: '12 Months' },
+];
+
 const maxRentOptions = Array.from({ length: (4000 - 300) / 100 + 1 }, (_, i) => ({ value: `${300 + i * 100}`, label: `${300 + i * 100}` }));
 
 
@@ -78,10 +85,13 @@ export default function TabTwoScreen() {
     'maxRent': dbUser?.preferences.max_rent,
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    'numRoommates': dbUser?.preferences.roommates
-
+    //'numRoommates': parseInt(props.numRoommates[0]),
+    'numRoommates': dbUser?.preferences.roommates,
+    'leaseTerms': "6 Months"
   });
-  
+    
+
+
   const enableEdit = () => {
     setIsEditing(true);
   };
@@ -209,6 +219,15 @@ export default function TabTwoScreen() {
                 isEditing={isEditing}
                 data={roommateOptions}
               />
+
+              <PreferenceItem
+                text="Lease Term"
+                defaultValue={localValues.leaseTerms}
+                onValueChange={(val) => setLocalValues({ ...localValues, "leaseTerms": val })}
+                isEditing={isEditing}
+                data={leaseTerms}
+              />
+
             </View>
           </View>
         </View>

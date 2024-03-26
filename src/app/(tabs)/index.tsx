@@ -14,6 +14,7 @@ interface Apartment {
   modelImage: string;
   rent: string;
   score: number;
+  leaseOption: string;
 }
 
 export default function TabOneScreen() {
@@ -31,7 +32,7 @@ export default function TabOneScreen() {
 
   const fetchUserPreferences = async () => {
     try {
-      const response = await fetch('http://10.229.122.6:5000/get_recommendations', { //change this line to your ip
+      const response = await fetch('http://10.229.16.121:5000/get_recommendations', { //change this line to your ip
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +48,7 @@ export default function TabOneScreen() {
 
       const maxScore = data[0].score;
 
-      const transformedApartments = data.map((apartment: { id: any; name: any; address: any; price: any; score: any, photos: string[], modelImage: string, modelName: string, rent: string }) => ({
+      const transformedApartments = data.map((apartment: { id: any; name: any; address: any; price: any; score: any, photos: string[], modelImage: string, modelName: string, rent: string, leaseOption: string }) => ({
         ...apartment,
         match: Number((apartment.score / maxScore) * 100).toFixed(0).toString(),
       }));
