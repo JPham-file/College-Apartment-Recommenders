@@ -17,6 +17,7 @@ export interface ApartmentUnit {
   isNew?: boolean;
   hasKnownAvailabilities?: boolean;
   availableDate?: Date | string | null;
+  leaseOption?: string | null;
 }
 
 export interface ApartmentUnitRecommendation extends ApartmentUnit {
