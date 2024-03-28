@@ -47,6 +47,30 @@ const ApartmentItem = (props: ApartmentItemProps) => {
     }
   }
 
+  const unsaveApartment = async () => {
+    setIsSaved(false);
+    const apiURL = `${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/apartments/remove`;
+    const body = {
+      rental_key: key,
+      property_id: propertyId,
+    };
+
+    const request = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch(apiURL, request);
+    const data = await response.json();
+    const { error, results } = data;
+    if (error) {
+      setIsSaved(true);
+    }
+  }
+
   const renderExpandableButton = () => {
     if (isExpanded) {
       return (
@@ -69,8 +93,10 @@ const ApartmentItem = (props: ApartmentItemProps) => {
     const fillColor = isSaved ? '#dc2626' : '#000';
     const heartClass = classNames('absolute', { 'opacity-60': !isSaved });
 
+    const saveHandler = isSaved ? () => unsaveApartment() : () => saveApartment();
+
     return (
-      <Pressable onPress={() => saveApartment()} className="absolute right-0 p-3">
+      <Pressable onPress={saveHandler} className="absolute right-0 p-3">
         <View className="flex justify-center items-center p-3">
           <View className="absolute">
             <FontAwesome name="heart-o" size={24} color="#f5f5f5" />
@@ -106,7 +132,7 @@ const ApartmentItem = (props: ApartmentItemProps) => {
           <View className="flex flex-row justify-between">
             <View className="flex-col flex-initial">
               <View className={textContainerClass}>
-                <Text className={nameClass}>{name} - {modelName}</Text>
+                <Text className={nameClass}>{name}</Text>
               </View>
               <View className={textContainerClass}>
                 <Text className={addressClass}>{address.substring(address.indexOf(','))}</Text>
