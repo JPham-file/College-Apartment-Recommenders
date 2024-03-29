@@ -41,7 +41,7 @@ function OptionsButton({onPress}: {
         backgroundColor: 'rgb(95,169,234)',
         borderRadius: 10}}
     >
-      <Text>Lease Filter</Text>
+      <Text>Availability Filter</Text>
     </TouchableOpacity>
   );
 }
@@ -51,6 +51,7 @@ function OptionsModal({visible, options, onSelect, onClose}: OptionsModalProps) 
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)'}}>
+
         <View style={{backgroundColor: 'white', padding: 20, borderRadius: 10}}>
           {options.map((option, index) => (
             <TouchableOpacity
@@ -63,9 +64,11 @@ function OptionsModal({visible, options, onSelect, onClose}: OptionsModalProps) 
               <Text>{option}</Text>
             </TouchableOpacity>
           ))}
+
           <TouchableOpacity onPress={onClose} style={{padding: 10, marginTop: 10}}>
             <Text>Close</Text>
           </TouchableOpacity>
+
         </View>
       </View>
     </Modal>
@@ -124,10 +127,8 @@ export default function TabLayout() {
   const [showOptions, setShowOptions] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const options: string[] = [
-    'Lease 6 Months',
-    'Lease 9 Months',
-    'Lease 11 Months',
-    'Lease 12+ Months'
+    'Show All',
+    'Currently Available',
   ];
 
   return (
