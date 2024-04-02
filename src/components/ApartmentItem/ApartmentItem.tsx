@@ -17,7 +17,7 @@ export interface ApartmentItemProps {
 
 const ApartmentItem = (props: ApartmentItemProps) => {
   
-  const { apartment, token, isSkeletonLoading } = props;
+  const { apartment, token, isSkeletonLoading, showScore } = props;
   const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, hasKnownAvailabilities , isSaved: originallySavedByUser } = apartment;
 
 
