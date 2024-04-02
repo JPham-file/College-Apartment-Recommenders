@@ -9,6 +9,7 @@ import { ClerkProvider } from '@clerk/clerk-expo';
 import { useColorScheme } from '@/src/components/useColorScheme';
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaView } from 'react-native';
+import {FilterProvider} from "@/src/components/FilterContext";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -47,7 +48,11 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <FilterProvider>
+      <RootLayoutNav />
+    </FilterProvider>
+  );
 }
 
 const tokenCache = {

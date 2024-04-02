@@ -16,8 +16,10 @@ export interface ApartmentItemProps {
 }
 
 const ApartmentItem = (props: ApartmentItemProps) => {
-  const { apartment, token, isSkeletonLoading, showScore} = props;
-  const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, isSaved: originallySavedByUser } = apartment;
+  
+  const { apartment, token, isSkeletonLoading, showScore } = props;
+  const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, hasKnownAvailabilities , isSaved: originallySavedByUser } = apartment;
+
 
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(!!originallySavedByUser);
@@ -112,9 +114,13 @@ const ApartmentItem = (props: ApartmentItemProps) => {
 
   const textContainerClass = addSkeleton('rounded-full my-1', isSkeletonLoading, false);
   const nameClass = addSkeleton('text-base font-bold', isSkeletonLoading);
+  const availableClass = addSkeleton('text-base font-bold', isSkeletonLoading);
   const addressClass = addSkeleton('text-sm -my-1', isSkeletonLoading);
   const rentClass = addSkeleton('text-2xl font-bold ', isSkeletonLoading);
   const imageClass = addSkeleton('w-full h-56 rounded-lg', isSkeletonLoading, false);
+
+  // console.log('hasKnownAvailabilities', hasKnownAvailabilities)
+  const [availability, setAvailability] = useState<boolean>(false)
 
   return (
     <View className="flex my-3">
@@ -135,6 +141,11 @@ const ApartmentItem = (props: ApartmentItemProps) => {
               <View className={textContainerClass}>
                 <Text className={nameClass}>{name}</Text>
               </View>
+
+              <View className={textContainerClass}>
+                <Text className={availableClass}>AVAILABILITY: {hasKnownAvailabilities ? 'NOW' : 'NONE'} </Text>
+              </View>
+
               <View className={textContainerClass}>
                 <Text className={addressClass}>{address.substring(address.indexOf(','))}</Text>
               </View>

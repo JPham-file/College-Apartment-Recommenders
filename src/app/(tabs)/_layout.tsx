@@ -2,15 +2,16 @@ import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {Tabs} from 'expo-router';
 import {useUser, useAuth} from '@clerk/clerk-expo';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import Colors from '@/src/constants/Colors';
 import {useColorScheme} from '@/src/components/useColorScheme';
 import {useClientOnlyValue} from '@/src/components/useClientOnlyValue';
 import {SupabaseClient} from '@supabase/supabase-js';
 import {db} from "../../lib/supabase";
+import {useFilter, FilterProvider} from "@/src/components/FilterContext";
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 
-import {TouchableOpacity, Text, View, Modal} from 'react-native';
+import {TouchableOpacity, Text, View, Modal, Button} from 'react-native';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -41,13 +42,18 @@ function OptionsButton({onPress}: {
         backgroundColor: 'rgb(95,169,234)',
         borderRadius: 10}}
     >
-      <Text>Lease Filter</Text>
+      <Text>Availability Filter</Text>
     </TouchableOpacity>
   );
 }
 
 // the dropdown lease options
-function OptionsModal({visible, options, onSelect, onClose}: OptionsModalProps) {
+function OptionsModal({
+                        visible,
+                        options,
+                        onSelect,
+                        onClose
+                      }: OptionsModalProps) {
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)'}}>
@@ -72,7 +78,6 @@ function OptionsModal({visible, options, onSelect, onClose}: OptionsModalProps) 
   );
 }
 
-
 interface IPref {
   preferences: {
     roommates: number
@@ -87,6 +92,12 @@ export default function TabLayout() {
   const {isLoaded, isSignedIn, user} = useUser();
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const [userPref, setUserPref] = useState<IPref>()
+  const {setFilterOption} = useFilter()
+
+  const onSelectOption = (option: string) => {
+    setFilterOption(option);
+    setShowOptions(false);
+  }
 
   useEffect(() => {
     const initSupabaseAndFetchUser = async () => {
@@ -122,12 +133,9 @@ export default function TabLayout() {
   }, []);
 
   const [showOptions, setShowOptions] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const options: string[] = [
-    'Lease 6 Months',
-    'Lease 9 Months',
-    'Lease 11 Months',
-    'Lease 12+ Months'
+    'Show All',
+    'Currently Available',
   ];
 
   return (
@@ -182,17 +190,15 @@ export default function TabLayout() {
         />
       </Tabs>
 
-      {/* Options modal */}
       <OptionsModal
         visible={showOptions}
         options={options}
         onSelect={(option) => {
-          setSelectedOption(option);
-          setShowOptions(false); // Close the modal
+          // setShowOptions(false); // Close the modal
+          onSelectOption(option);
         }}
         onClose={() => setShowOptions(false)}
       />
     </>
-
   );
 }
