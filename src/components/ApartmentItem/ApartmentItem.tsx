@@ -66,7 +66,6 @@ const ApartmentItem = (props: ApartmentItemProps) => {
     };
     const response = await fetch(apiURL, request);
     const data = await response.json();
-    console.log(data)
     const { error, results } = data;
     if (error) {
       setIsSaved(true);
@@ -143,11 +142,7 @@ const ApartmentItem = (props: ApartmentItemProps) => {
                 <Text className={rentClass}>${rent}<Text className="text-sm font-normal">/month</Text></Text>
               </View>
             </View>
-            {showScore ?
-            <MatchPercentageBar percentage={Number(match)} fill="#f5f5f5" isSkeletonLoading={isSkeletonLoading} />
-            :
-            null
-            }
+            {showScore && <MatchPercentageBar percentage={Number(match)} fill="#f5f5f5" isSkeletonLoading={isSkeletonLoading} /> }
           </View>
           {!isSkeletonLoading && isExpanded && <MatchDetailTable apartment={apartment} />}
           <View className="flex flex-row justify-center items-center">

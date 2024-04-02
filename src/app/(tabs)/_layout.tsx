@@ -157,7 +157,7 @@ export default function TabLayout() {
             options={{
               tabBarIcon: ({color}) => <TabBarIcon name="bookmark" color={color}/>,
               tabBarShowLabel: false,
-              headerTitle: 'Bookmarks',
+              headerTitle: 'Saved Apartments',
               headerTitleStyle: {fontSize: 20}
             }}
           />

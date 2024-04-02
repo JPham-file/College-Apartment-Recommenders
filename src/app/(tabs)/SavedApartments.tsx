@@ -33,7 +33,7 @@ export default function SavedApartments() {
 
       if (!response.ok) {
         console.error(response)
-        throw new Error('Network response failure: make sure to change IP to your machine IP');
+        throw new Error('Network response failure');
       }
       const data = await response.json();
 
@@ -62,7 +62,6 @@ export default function SavedApartments() {
 
 
   const listData = isSkeletonLoading ? dummy : apartments;
-  console.log(listData)
 
   return (
     <View className="flex-1 items-center justify-center">
