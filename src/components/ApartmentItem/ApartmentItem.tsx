@@ -12,11 +12,14 @@ export interface ApartmentItemProps {
   apartment: ApartmentUnitRecommendation;
   token: string | null;
   isSkeletonLoading: boolean;
+  showScore: boolean
 }
 
 const ApartmentItem = (props: ApartmentItemProps) => {
+  
   const { apartment, token, isSkeletonLoading } = props;
   const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, hasKnownAvailabilities , isSaved: originallySavedByUser } = apartment;
+
 
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(!!originallySavedByUser);
@@ -150,7 +153,7 @@ const ApartmentItem = (props: ApartmentItemProps) => {
                 <Text className={rentClass}>${rent}<Text className="text-sm font-normal">/month</Text></Text>
               </View>
             </View>
-            <MatchPercentageBar percentage={Number(match)} fill="#f5f5f5" isSkeletonLoading={isSkeletonLoading} />
+            {showScore && <MatchPercentageBar percentage={Number(match)} fill="#f5f5f5" isSkeletonLoading={isSkeletonLoading} /> }
           </View>
           {!isSkeletonLoading && isExpanded && <MatchDetailTable apartment={apartment} />}
           <View className="flex flex-row justify-center items-center">

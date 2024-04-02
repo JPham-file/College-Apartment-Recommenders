@@ -1,17 +1,15 @@
 import { ApartmentUnitRecommendation } from '@/src/types';
 import { useUser, useAuth } from '@clerk/clerk-expo';
-import React, { useCallback, useState, useEffect, useContext} from 'react';
-import { FlatList, Image, Text } from 'react-native';
+import { useCallback, useState } from 'react';
+import { FlatList, Image } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { View } from '@/src/components/Themed';
 import ApartmentItem from '@/src/components/ApartmentItem';
 import dummy from '@/src/lib/skeleton/mocks/ApartmentRecommendation';
-import {useFilter} from "@/src/components/FilterContext";
 
-export default function TabOneScreen()  {
+export default function SavedApartments() {
   const { user } = useUser();
   const { getToken } = useAuth();
-  const {filterOption} = useFilter();
 
   const [apartments, setApartments] = useState<ApartmentUnitRecommendation[]>([]);
   const [token, setToken] = useState<string | null>(null);
@@ -24,7 +22,7 @@ export default function TabOneScreen()  {
 
 
     try {
-      const apiURL = `${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/get_recommendations`;
+      const apiURL = `${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/get_saved_apartments`;
       const response = await fetch(apiURL, {
         method: 'GET',
         headers: {
@@ -35,20 +33,16 @@ export default function TabOneScreen()  {
 
       if (!response.ok) {
         console.error(response)
-        throw new Error('Network response failure: make sure to change IP to your machine IP');
+        throw new Error('Network response failure');
       }
       const data = await response.json();
 
-      const maxScore = data[0].score;
 
-      let transformedApartments = data.map((apartment: ApartmentUnitRecommendation) => ({
+
+      const transformedApartments = data.map((apartment: ApartmentUnitRecommendation) => ({
         ...apartment,
-        match: Number((apartment.score / maxScore) * 100).toFixed(0).toString(),
+
       }));
-      // Filter based on the selected filterOption, if necessary
-      if (filterOption === 'Currently Available') {
-        transformedApartments = transformedApartments.filter(apartment => apartment.hasKnownAvailabilities);
-      }
 
       setApartments(transformedApartments);
     } catch (error) {
@@ -63,18 +57,19 @@ export default function TabOneScreen()  {
       if (user) {
         fetchUserPreferences();
       }
-    }, [user, filterOption])
+    }, [user])
   );
 
 
   const listData = isSkeletonLoading ? dummy : apartments;
+
   return (
     <View className="flex-1 items-center justify-center">
       <FlatList
         data={listData}
         className="flex-grow w-11/12"
         keyExtractor={( item, index ) => `${item.propertyId}-${item.key}-${index}`}
-        renderItem={({ item: apartment }) => <ApartmentItem apartment={apartment} token={token} isSkeletonLoading={isSkeletonLoading} showScore={true} />}
+        renderItem={({ item: apartment }) => <ApartmentItem apartment={apartment} token={token} isSkeletonLoading={isSkeletonLoading} showScore={false}/>}
       />
     </View>
   );

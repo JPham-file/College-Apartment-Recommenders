@@ -76,7 +76,8 @@ export default function TabTwoScreen() {
     'maxRent': dbUser?.preferences.max_rent,
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    'numRoommates': dbUser?.preferences.roommates
+    'numRoommates': dbUser?.preferences.roommates,
+    'leaseTerms': "6 Months"
   });
   
   const [localValues, setLocalValues] = useState({
@@ -85,7 +86,6 @@ export default function TabTwoScreen() {
     'maxRent': dbUser?.preferences.max_rent,
     'campusProximity': "Low",
     'publicTransportation': "Medium",
-    //'numRoommates': parseInt(props.numRoommates[0]),
     'numRoommates': dbUser?.preferences.roommates,
     'leaseTerms': "6 Months"
   });
@@ -125,7 +125,7 @@ export default function TabTwoScreen() {
         const initializedSupabase = await db(token!);
         console.log("Supabase client initialized:", !!initializedSupabase);
         setSupabase(initializedSupabase)
-        //setLocalValues({ ...localValues, "numRoommates": dbUser?.preferences.roommates })
+
       }
     };
     initSupabaseAndFetchUser();
@@ -133,8 +133,8 @@ export default function TabTwoScreen() {
 
   useEffect(() => {
     if (dbUser) {
-      setDBValues({ ...localValues, numRoommates: dbUser.preferences.roommates, maxRent: dbUser.preferences.max_rent });
-      setLocalValues(DBvalues);
+      setDBValues({ ...DBvalues, numRoommates: dbUser.preferences.roommates, maxRent: dbUser.preferences.max_rent });
+      setLocalValues({ ...DBvalues, numRoommates: dbUser.preferences.roommates, maxRent: dbUser.preferences.max_rent });
     }
   }, [dbUser]);
 
