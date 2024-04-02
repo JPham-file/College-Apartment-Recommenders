@@ -7,7 +7,7 @@ import { View } from '@/src/components/Themed';
 import ApartmentItem from '@/src/components/ApartmentItem';
 import dummy from '@/src/lib/skeleton/mocks/ApartmentRecommendation';
 
-export default function TabOneScreen() {
+export default function SavedApartments() {
   const { user } = useUser();
   const { getToken } = useAuth();
 
@@ -22,7 +22,7 @@ export default function TabOneScreen() {
 
 
     try {
-      const apiURL = `${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/get_recommendations`;
+      const apiURL = `${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/get_saved_apartments`;
       const response = await fetch(apiURL, {
         method: 'GET',
         headers: {
@@ -37,11 +37,11 @@ export default function TabOneScreen() {
       }
       const data = await response.json();
 
-      const maxScore = data[0].score;
+
 
       const transformedApartments = data.map((apartment: ApartmentUnitRecommendation) => ({
         ...apartment,
-        match: Number((apartment.score / maxScore) * 100).toFixed(0).toString(),
+
       }));
 
       setApartments(transformedApartments);
@@ -62,6 +62,7 @@ export default function TabOneScreen() {
 
 
   const listData = isSkeletonLoading ? dummy : apartments;
+  console.log(listData)
 
   return (
     <View className="flex-1 items-center justify-center">
@@ -69,7 +70,7 @@ export default function TabOneScreen() {
         data={listData}
         className="flex-grow w-11/12"
         keyExtractor={( item, index ) => `${item.propertyId}-${item.key}-${index}`}
-        renderItem={({ item: apartment }) => <ApartmentItem apartment={apartment} token={token} isSkeletonLoading={isSkeletonLoading} showScore={true} />}
+        renderItem={({ item: apartment }) => <ApartmentItem apartment={apartment} token={token} isSkeletonLoading={isSkeletonLoading} showScore={false}/>}
       />
     </View>
   );
