@@ -1,15 +1,17 @@
 import { ApartmentUnitRecommendation } from '@/src/types';
 import { useUser, useAuth } from '@clerk/clerk-expo';
-import { useCallback, useState } from 'react';
-import { FlatList, Image } from 'react-native';
+import React, { useCallback, useState, useEffect, useContext} from 'react';
+import { FlatList, Image, Text } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { View } from '@/src/components/Themed';
 import ApartmentItem from '@/src/components/ApartmentItem';
 import dummy from '@/src/lib/skeleton/mocks/ApartmentRecommendation';
+import {useFilter} from "@/src/components/FilterContext";
 
-export default function TabOneScreen() {
+export default function TabOneScreen()  {
   const { user } = useUser();
   const { getToken } = useAuth();
+  const {filterOption} = useFilter();
 
   const [apartments, setApartments] = useState<ApartmentUnitRecommendation[]>([]);
   const [token, setToken] = useState<string | null>(null);
@@ -38,10 +40,14 @@ export default function TabOneScreen() {
 
       const maxScore = data[0].score;
 
-      const transformedApartments = data.map((apartment: ApartmentUnitRecommendation) => ({
+      let transformedApartments = data.map((apartment: ApartmentUnitRecommendation) => ({
         ...apartment,
         match: Number((apartment.score / maxScore) * 100).toFixed(0).toString(),
       }));
+      // Filter based on the selected filterOption, if necessary
+      if (filterOption === 'Currently Available') {
+        transformedApartments = transformedApartments.filter(apartment => apartment.hasKnownAvailabilities);
+      }
 
       setApartments(transformedApartments);
     } catch (error) {
@@ -56,12 +62,11 @@ export default function TabOneScreen() {
       if (user) {
         fetchUserPreferences();
       }
-    }, [user])
+    }, [user, filterOption])
   );
 
 
   const listData = isSkeletonLoading ? dummy : apartments;
-
   return (
     <View className="flex-1 items-center justify-center">
       <FlatList

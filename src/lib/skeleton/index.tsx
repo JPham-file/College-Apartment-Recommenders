@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useEffect } from 'react';
 import classNames from 'classnames';
+import { View } from 'react-native';
 import Animated, {
   useSharedValue,
   Easing,
