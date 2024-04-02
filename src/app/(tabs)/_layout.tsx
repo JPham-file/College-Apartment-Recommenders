@@ -152,6 +152,15 @@ export default function TabLayout() {
             ),
           }}
         />
+          <Tabs.Screen
+            name="SavedApartments"
+            options={{
+              tabBarIcon: ({color}) => <TabBarIcon name="bookmark" color={color}/>,
+              tabBarShowLabel: false,
+              headerTitle: 'Saved Apartments',
+              headerTitleStyle: {fontSize: 20}
+            }}
+          />
         <Tabs.Screen
           name="Map"
           options={{
