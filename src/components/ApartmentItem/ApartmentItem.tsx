@@ -13,37 +13,21 @@ export interface ApartmentItemProps {
   apartment: ApartmentUnitRecommendation;
   token: string | null;
   isSkeletonLoading: boolean;
-  showScore: boolean
+  showScore: boolean;
+  onPress: () => void;
 }
 
 const ApartmentItem = (props: ApartmentItemProps) => {
   
-  const { apartment, token, isSkeletonLoading, showScore } = props;
-  const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, hasKnownAvailabilities , isSaved: originallySavedByUser } = apartment;
+  const { apartment, token, isSkeletonLoading, showScore, onPress } = props;
+  const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, hasKnownAvailabilities, isSaved: originallySavedByUser } = apartment;
 
-  const [modalVisible, setModalVisible] = useState(false);
+
+
   const [isSaved, setIsSaved] = useState<boolean>(!!originallySavedByUser);
 
   const rotation = useSharedValue(0);
 
-  const closeModal = () => {
-    setModalVisible(false);
-  };
-  
-  const renderModal = () => (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={closeModal}
-    >
-      <Pressable onPress={closeModal} className="flex-1 justify-center items-center bg-black bg-opacity-50">
-        <View className="bg-white rounded-lg p-4">
-          <ModalScreen apartment={apartment} onClose={closeModal} />
-        </View>
-      </Pressable>
-    </Modal>
-  );
 
   const saveApartment = async () => {
     setIsSaved(true);
@@ -93,24 +77,6 @@ const ApartmentItem = (props: ApartmentItemProps) => {
     }
   }
 
-  const renderExpandableButton = () => {
-    if (modalVisible) {
-      return (
-        <Pressable onPress={() => setModalVisible(false)}>
-          {/* color is neutral-400 in tailwind - unable to use className for FontAwesome icons */}
-          <FontAwesome name="angle-up" size={24} color="#a1a1aa" />
-        </Pressable>
-      );
-    }
-
-    return (
-      <Pressable onPress={() => setModalVisible(true)}>
-        {/* color is neutral-400 in tailwind - unable to use className for FontAwesome icons */}
-        <FontAwesome name="angle-down" size={24} color="#a1a1aa" />
-      </Pressable>
-    );
-  }
-
   const renderSaveApartmentButton = () => {
     const fillColor = isSaved ? '#dc2626' : '#000';
     const heartClass = classNames('absolute', { 'opacity-60': !isSaved });
@@ -142,6 +108,7 @@ const ApartmentItem = (props: ApartmentItemProps) => {
   const [availability, setAvailability] = useState<boolean>(false)
 
   return (
+  <Pressable onPress={onPress}>
     <View className="flex my-3">
       <View className="py-0 z-10">
         <SkeletonAnimated isLoading={isSkeletonLoading}>
@@ -162,10 +129,6 @@ const ApartmentItem = (props: ApartmentItemProps) => {
               </View>
 
               <View className={textContainerClass}>
-                <Text className={availableClass}>AVAILABILITY: {hasKnownAvailabilities ? 'NOW' : 'NONE'} </Text>
-              </View>
-
-              <View className={textContainerClass}>
                 <Text className={addressClass}>{address.substring(address.indexOf(','))}</Text>
               </View>
               <View className={textContainerClass}>
@@ -174,18 +137,10 @@ const ApartmentItem = (props: ApartmentItemProps) => {
             </View>
             {showScore && <MatchPercentageBar percentage={Number(match)} fill="#f5f5f5" isSkeletonLoading={isSkeletonLoading} /> }
           </View>
-          {!isSkeletonLoading && modalVisible &&           
-            <Pressable onPress={() => setModalVisible(true)}>
-              <Text>View Details</Text>
-            </Pressable>
-          }
-          <View className="flex flex-row justify-center items-center">
-            {!isSkeletonLoading && renderExpandableButton()}
-          </View>
         </SkeletonAnimated>
       </View>
-      {renderModal()}
     </View>
+   </Pressable>
   );
 };
 

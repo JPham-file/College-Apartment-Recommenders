@@ -1,24 +1,27 @@
 import { ApartmentUnitRecommendation } from '@/src/types';
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import React, { useCallback, useState, useEffect, useContext} from 'react';
-import { FlatList, Image, Text } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { FlatList, Image, Text, Pressable, Modal } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { View } from '@/src/components/Themed';
 import ApartmentItem from '@/src/components/ApartmentItem';
 import dummy from '@/src/lib/skeleton/mocks/ApartmentRecommendation';
 import {useFilter} from "@/src/components/FilterContext";
+import ModalScreen from '@/src/app/modal';
 
 export default function TabOneScreen()  {
+  const router = useRouter();
   const { user } = useUser();
   const { getToken } = useAuth();
   const {filterOption} = useFilter();
-
+  const [selectedApartment, setSelectedApartment] = useState<ApartmentUnitRecommendation | null>(null);
   const [apartments, setApartments] = useState<ApartmentUnitRecommendation[]>([]);
   const [token, setToken] = useState<string | null>(null);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState<boolean>(false);
 
+
   const fetchUserPreferences = async () => {
-    setIsSkeletonLoading(true);
+    setIsSkeletonLoading(false);
     const newToken = await getToken();
     setToken(newToken);
 
@@ -58,6 +61,14 @@ export default function TabOneScreen()  {
     }
   };
 
+
+  const openModal = (apartment: ApartmentUnitRecommendation) => {
+    router.push({
+      pathname: '/modal',
+      params: { apartment: JSON.stringify(apartment) },
+    });
+  };
+
   useFocusEffect(
     useCallback(() => {
       if (user) {
@@ -73,8 +84,16 @@ export default function TabOneScreen()  {
       <FlatList
         data={listData}
         className="flex-grow w-11/12"
-        keyExtractor={( item, index ) => `${item.propertyId}-${item.key}-${index}`}
-        renderItem={({ item: apartment }) => <ApartmentItem apartment={apartment} token={token} isSkeletonLoading={isSkeletonLoading} showScore={true} />}
+        keyExtractor={(item, index) => `${item.propertyId}-${item.key}-${index}`}
+        renderItem={({ item: apartment }) => (
+          <ApartmentItem
+            apartment={apartment}
+            token={token}
+            isSkeletonLoading={isSkeletonLoading}
+            showScore={true}
+            onPress={() => openModal(apartment)}
+          />
+        )}
       />
     </View>
   );
