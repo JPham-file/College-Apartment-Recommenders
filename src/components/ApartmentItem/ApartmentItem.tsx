@@ -1,12 +1,13 @@
 import { ApartmentUnitRecommendation } from '@/src/types';
 import React, { useState, memo } from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
+import { View, Text, Image, Pressable, Modal } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import classNames from 'classnames';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MatchPercentageBar from './MatchPercentageBar';
 import MatchDetailTable from './MatchDetailTable';
 import { addSkeleton, skeleton, SkeletonAnimated } from '@/src/lib/skeleton';
+import ModalScreen from '@/src/app/modal';
 
 export interface ApartmentItemProps {
   apartment: ApartmentUnitRecommendation;
@@ -20,11 +21,29 @@ const ApartmentItem = (props: ApartmentItemProps) => {
   const { apartment, token, isSkeletonLoading, showScore } = props;
   const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, hasKnownAvailabilities , isSaved: originallySavedByUser } = apartment;
 
-
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [isSaved, setIsSaved] = useState<boolean>(!!originallySavedByUser);
 
   const rotation = useSharedValue(0);
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+  
+  const renderModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={closeModal}
+    >
+      <Pressable onPress={closeModal} className="flex-1 justify-center items-center bg-black bg-opacity-50">
+        <View className="bg-white rounded-lg p-4">
+          <ModalScreen apartment={apartment} onClose={closeModal} />
+        </View>
+      </Pressable>
+    </Modal>
+  );
 
   const saveApartment = async () => {
     setIsSaved(true);
@@ -75,9 +94,9 @@ const ApartmentItem = (props: ApartmentItemProps) => {
   }
 
   const renderExpandableButton = () => {
-    if (isExpanded) {
+    if (modalVisible) {
       return (
-        <Pressable onPress={() => setIsExpanded(false)}>
+        <Pressable onPress={() => setModalVisible(false)}>
           {/* color is neutral-400 in tailwind - unable to use className for FontAwesome icons */}
           <FontAwesome name="angle-up" size={24} color="#a1a1aa" />
         </Pressable>
@@ -85,7 +104,7 @@ const ApartmentItem = (props: ApartmentItemProps) => {
     }
 
     return (
-      <Pressable onPress={() => setIsExpanded(true)}>
+      <Pressable onPress={() => setModalVisible(true)}>
         {/* color is neutral-400 in tailwind - unable to use className for FontAwesome icons */}
         <FontAwesome name="angle-down" size={24} color="#a1a1aa" />
       </Pressable>
@@ -155,12 +174,17 @@ const ApartmentItem = (props: ApartmentItemProps) => {
             </View>
             {showScore && <MatchPercentageBar percentage={Number(match)} fill="#f5f5f5" isSkeletonLoading={isSkeletonLoading} /> }
           </View>
-          {!isSkeletonLoading && isExpanded && <MatchDetailTable apartment={apartment} />}
+          {!isSkeletonLoading && modalVisible &&           
+            <Pressable onPress={() => setModalVisible(true)}>
+              <Text>View Details</Text>
+            </Pressable>
+          }
           <View className="flex flex-row justify-center items-center">
             {!isSkeletonLoading && renderExpandableButton()}
           </View>
         </SkeletonAnimated>
       </View>
+      {renderModal()}
     </View>
   );
 };

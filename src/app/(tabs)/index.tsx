@@ -47,7 +47,7 @@ export default function TabOneScreen()  {
       }));
       // Filter based on the selected filterOption, if necessary
       if (filterOption === 'Currently Available') {
-        transformedApartments = transformedApartments.filter(apartment => apartment.hasKnownAvailabilities);
+        transformedApartments = transformedApartments.filter((apartment: ApartmentUnitRecommendation) => apartment.hasKnownAvailabilities);
       }
 
       setApartments(transformedApartments);
