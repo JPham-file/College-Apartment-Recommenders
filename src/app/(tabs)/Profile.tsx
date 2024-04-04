@@ -1,5 +1,6 @@
 import { Text, View } from '@/src/components/Themed';
-import { Image, TouchableOpacity, Pressable, ScrollView } from 'react-native';
+import { ClassList } from '@/src/components/ClassList';
+import { Image, TouchableOpacity, Pressable, ScrollView, TextInput, FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { useUser, useClerk, useAuth } from "@clerk/clerk-expo";
@@ -70,6 +71,7 @@ export default function TabTwoScreen() {
  
 
   const [isEditing, setIsEditing] = useState(false);
+
   const [DBvalues, setDBValues] = useState({
     'name': user?.fullName,
     'email': user?.primaryEmailAddress?.emailAddress,
@@ -89,9 +91,16 @@ export default function TabTwoScreen() {
     'numRoommates': dbUser?.preferences.roommates,
     'leaseTerms': "6 Months"
   });
+
+  const [classData, setClassData] = useState([
+    {
+      subject: 'CSCE',
+      course: '121',
+      section: '200',
+      id: 1,
+    }
+  ])
     
-
-
   const enableEdit = () => {
     setIsEditing(true);
   };
@@ -139,32 +148,32 @@ export default function TabTwoScreen() {
   }, [dbUser]);
 
 
-    const updateUserInDatabase = async (supabase: SupabaseClient) => {
-      if (!supabase) {
-        console.log('Supabase client is not initialized');
-        return;
-      }
-      const updatePreferences = {
-        max_rent: localValues.maxRent,
-        roommates: localValues.numRoommates
-      };
-      console.log(`Preparing to update user data for email: `);
-  
-      const {error} = await supabase
-        .from("User")
-        .update({
-          id: user!.id,
-          preferences: updatePreferences,
-        })
-        .eq("id", user!.id);
-  
-      if (error) {
-        console.error("Error updating user in Supabase:", error.message);
-      }
+  const updateUserInDatabase = async (supabase: SupabaseClient) => {
+    if (!supabase) {
+      console.log('Supabase client is not initialized');
+      return;
+    }
+    const updatePreferences = {
+      max_rent: localValues.maxRent,
+      roommates: localValues.numRoommates
     };
+    console.log(`Preparing to update user data for email: `);
 
+    const {error} = await supabase
+      .from("User")
+      .update({
+        id: user!.id,
+        preferences: updatePreferences,
+      })
+      .eq("id", user!.id);
+
+    if (error) {
+      console.error("Error updating user in Supabase:", error.message);
+    }
+  };
 
   return (
+    <ScrollView>
     <View className="flex justify-between h-full p-4">
       <View>
         <View className="flex flex-row justify-center py-4">
@@ -230,6 +239,17 @@ export default function TabTwoScreen() {
 
             </View>
           </View>
+
+          <ClassList 
+            classes={classData}
+            add={(newClassItem) => {
+              setClassData(currentClassData => [
+                ...currentClassData,
+                newClassItem
+              ]);
+            }}
+          />
+
         </View>
       </View>
 
@@ -272,5 +292,6 @@ export default function TabTwoScreen() {
         </View>
       </View>
     </View>
+    </ScrollView>
   );
 }
