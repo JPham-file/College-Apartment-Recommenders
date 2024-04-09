@@ -48,6 +48,7 @@ export default function TabOneScreen()  {
         ...apartment,
         match: Number((apartment.score / maxScore) * 100).toFixed(0).toString(),
       }));
+ 
       // Filter based on the selected filterOption, if necessary
       if (filterOption === 'Currently Available') {
         transformedApartments = transformedApartments.filter((apartment: ApartmentUnitRecommendation) => apartment.hasKnownAvailabilities);
@@ -60,12 +61,12 @@ export default function TabOneScreen()  {
       setIsSkeletonLoading(false);
     }
   };
-
+ 
 
   const openModal = (apartment: ApartmentUnitRecommendation) => {
     router.push({
       pathname: '/modal',
-      params: { apartment: JSON.stringify(apartment) },
+      params: { apartment: JSON.stringify(apartment), showScore: 1},
     });
   };
 

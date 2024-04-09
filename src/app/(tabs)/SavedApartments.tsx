@@ -1,27 +1,23 @@
 import { ApartmentUnitRecommendation } from '@/src/types';
 import { useUser, useAuth } from '@clerk/clerk-expo';
-import React, { useCallback, useState, useEffect, useContext} from 'react';
-import { FlatList, Image, Text, Pressable, Modal } from 'react-native';
+import { useCallback, useState } from 'react';
+import { FlatList, Image } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { View } from '@/src/components/Themed';
 import ApartmentItem from '@/src/components/ApartmentItem';
 import dummy from '@/src/lib/skeleton/mocks/ApartmentRecommendation';
-import {useFilter} from "@/src/components/FilterContext";
-import ModalScreen from '@/src/app/modal';
 
-export default function TabOneScreen()  {
+export default function SavedApartments() {
   const router = useRouter();
   const { user } = useUser();
   const { getToken } = useAuth();
-  const {filterOption} = useFilter();
-  const [selectedApartment, setSelectedApartment] = useState<ApartmentUnitRecommendation | null>(null);
+
   const [apartments, setApartments] = useState<ApartmentUnitRecommendation[]>([]);
   const [token, setToken] = useState<string | null>(null);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState<boolean>(false);
 
-
   const fetchUserPreferences = async () => {
-    setIsSkeletonLoading(true);
+    setIsSkeletonLoading(false);
     const newToken = await getToken();
     setToken(newToken);
 
@@ -38,20 +34,16 @@ export default function TabOneScreen()  {
 
       if (!response.ok) {
         console.error(response)
-        throw new Error('Network response failure: make sure to change IP to your machine IP');
+        throw new Error('Network response failure: ');
       }
       const data = await response.json();
 
       const maxScore = data[0].score;
 
-      let transformedApartments = data.map((apartment: ApartmentUnitRecommendation) => ({
+      const transformedApartments = data.map((apartment: ApartmentUnitRecommendation) => ({
         ...apartment,
         match: Number((apartment.score / maxScore) * 100).toFixed(0).toString(),
       }));
-      // Filter based on the selected filterOption, if necessary
-      if (filterOption === 'Currently Available') {
-        transformedApartments = transformedApartments.filter((apartment: ApartmentUnitRecommendation) => apartment.hasKnownAvailabilities);
-      }
 
       setApartments(transformedApartments);
     } catch (error) {
@@ -65,7 +57,7 @@ export default function TabOneScreen()  {
   const openModal = (apartment: ApartmentUnitRecommendation) => {
     router.push({
       pathname: '/modal',
-      params: { apartment: JSON.stringify(apartment) },
+      params: { apartment: JSON.stringify(apartment), showScore: 0 },
     });
   };
 
@@ -74,11 +66,12 @@ export default function TabOneScreen()  {
       if (user) {
         fetchUserPreferences();
       }
-    }, [user, filterOption])
+    }, [user])
   );
 
 
   const listData = isSkeletonLoading ? dummy : apartments;
+
   return (
     <View className="flex-1 items-center justify-center">
       <FlatList

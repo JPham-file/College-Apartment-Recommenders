@@ -18,6 +18,8 @@ export interface ApartmentUnit {
   hasKnownAvailabilities?: boolean;
   availableDate?: Date | string | null;
   leaseOption?: string | null;
+  phoneNumber: string | null;
+  description: string | null;
 }
 
 export interface ApartmentUnitRecommendation extends ApartmentUnit {

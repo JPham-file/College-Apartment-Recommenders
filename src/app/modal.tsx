@@ -6,14 +6,12 @@ import { FontAwesome, FontAwesome5 } from '@expo/vector-icons/';
 import MatchPercentageBar from '../components/ApartmentItem/MatchPercentageBar';
 import MatchDetailTable from '../components/ApartmentItem/MatchDetailTable';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import {openURL} from "expo-linking";
 
 export default function Modal() {
   const router = useRouter();
-  const { apartment: apartmentString } = useLocalSearchParams();
+  const { apartment: apartmentString, showScore: visibleScore } = useLocalSearchParams();
 
-  const onClose = () => {
-    router.back();
-  };
 
   if (!apartmentString) {
     return null;
@@ -21,7 +19,8 @@ export default function Modal() {
 
   const apartment: ApartmentUnitRecommendation = JSON.parse(apartmentString as string);
 
-  const { name, modelName, address, modelImage, rent, photos, match, hasKnownAvailabilities, details, squareFeet } = apartment;
+  const { name, modelName, address, modelImage, rent, photos, match, hasKnownAvailabilities, details, squareFeet,phoneNumber, description } = apartment;
+
 
   return (
     <View className="flex-1">
@@ -37,12 +36,30 @@ export default function Modal() {
 
               <Text className="text-3xl font-bold">${rent}<Text className="text-sm font-normal">/month</Text></Text>
             </View>
-            <MatchPercentageBar percentage={Number(match)} fill="#f5f5f5" />
+            { visibleScore === "1" && <MatchPercentageBar percentage={Number(match)} fill="#f5f5f5" /> }
           </View>
 
 
           <MatchDetailTable apartment={apartment}/>
-          <Text className="text-lg font-bold"> {hasKnownAvailabilities ?  (<FontAwesome color='green' size={24}  name="check-circle-o" /> ):  (<FontAwesome color="red" size={24} name="times-circle-o" />)} {hasKnownAvailabilities ? 'Units available' : 'No availabile units'} </Text>
+
+          <View className = "flex flex-row">
+            {hasKnownAvailabilities ?  (<FontAwesome color='green' size={22}  name="check-circle-o" /> ) :  (<FontAwesome color="red" size={22} name="times-circle-o" />)} 
+            <Text className="pl-2 text-lg"> {hasKnownAvailabilities ? 'Units available' : 'No availabile units'} </Text>
+          </View>
+
+          <View className="py-4 pl-1">
+            <Pressable className="flex flex-row align-center" onPress = { () =>openURL(`tel:${phoneNumber}`) }>
+              <FontAwesome name="phone" color="white" size={22}/>
+              <Text className="pl-2 text-lg"> {phoneNumber?.substring(3)} </Text>
+            </Pressable>
+          </View>
+
+          <View className="py-12">
+
+            <Text className="text-base"> {description} </Text>
+
+          </View>
+      
 
          
         </View>

@@ -20,7 +20,7 @@ export interface ApartmentItemProps {
 const ApartmentItem = (props: ApartmentItemProps) => {
   
   const { apartment, token, isSkeletonLoading, showScore, onPress } = props;
-  const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, hasKnownAvailabilities, isSaved: originallySavedByUser } = apartment;
+  const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, hasKnownAvailabilities, isSaved: originallySavedByUser, phoneNumber } = apartment;
 
 
 
