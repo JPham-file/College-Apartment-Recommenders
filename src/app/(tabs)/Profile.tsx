@@ -147,6 +147,27 @@ export default function TabTwoScreen() {
     }
   }, [dbUser]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ new_classes: classData }),
+        };
+        const response = await fetch('/update_classes', options)
+        const result = await response.json();
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    }
+
+    if (classData) {
+      fetchData()
+    }
+  }, [classData])
 
   const updateUserInDatabase = async (supabase: SupabaseClient) => {
     if (!supabase) {
