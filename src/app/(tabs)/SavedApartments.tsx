@@ -34,15 +34,14 @@ export default function SavedApartments() {
 
       if (!response.ok) {
         console.error(response)
-        throw new Error('Network response failure: ');
+        throw new Error('Network response failure');
       }
       const data = await response.json();
 
-      const maxScore = data[0].score;
 
       const transformedApartments = data.map((apartment: ApartmentUnitRecommendation) => ({
         ...apartment,
-        match: Number((apartment.score / maxScore) * 100).toFixed(0).toString(),
+        
       }));
 
       setApartments(transformedApartments);
