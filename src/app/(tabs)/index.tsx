@@ -1,7 +1,7 @@
 import { ApartmentUnitRecommendation } from '@/src/types';
 import { useUser, useAuth } from '@clerk/clerk-expo';
-import React, { useCallback, useState, useEffect, useContext} from 'react';
-import { FlatList, Image, Text, Pressable, Modal } from 'react-native';
+import React, { useCallback, useState, useEffect, useContext, useRef} from 'react';
+import { FlatList, Image, Text, Pressable, Modal, NativeScrollEvent } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { View } from '@/src/components/Themed';
 import ApartmentItem from '@/src/components/ApartmentItem';
@@ -19,15 +19,21 @@ export default function TabOneScreen()  {
   const [token, setToken] = useState<string | null>(null);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState<boolean>(false);
 
+  const flatListRef = useRef<FlatList>(null);
+  const [lastRequestTime, setLastRequestTime] = useState<number>(0);
+  const maxScore  = useRef<number>(1);
 
-  const fetchUserPreferences = async () => {
+  const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }: NativeScrollEvent) => {
+    const paddingToBottom = 20;
+    return layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom;
+  };
+  const fetchUserPreferences = async (page: number, limit: number) => {
     setIsSkeletonLoading(false);
     const newToken = await getToken();
     setToken(newToken);
-
-
     try {
-      const apiURL = `${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/get_recommendations`;
+      const apiURL = `${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/get_recommendations?page=${page}&limit=${limit}`;
       const response = await fetch(apiURL, {
         method: 'GET',
         headers: {
@@ -35,28 +41,26 @@ export default function TabOneScreen()  {
           'Authorization': `Bearer ${newToken}`,
         },
       });
-
       if (!response.ok) {
-        console.error(response)
+        console.error(response);
         throw new Error('Network response failure: make sure to change IP to your machine IP');
       }
       const data = await response.json();
-
-      const maxScore = data[0].score;
+      if (page === 1){
+        maxScore.current =data[0].score
+      }
 
       let transformedApartments = data.map((apartment: ApartmentUnitRecommendation) => ({
         ...apartment,
-        match: Number((apartment.score / maxScore) * 100).toFixed(0).toString(),
+        match: Number((apartment.score / maxScore.current) * 100).toFixed(0).toString(),
       }));
- 
-      // Filter based on the selected filterOption, if necessary
       if (filterOption === 'Currently Available') {
         transformedApartments = transformedApartments.filter((apartment: ApartmentUnitRecommendation) => apartment.hasKnownAvailabilities);
       }
-
-      setApartments(transformedApartments);
+      return transformedApartments; // Return the transformed apartments
     } catch (error) {
       console.error('There was an error fetching the user preferences:', error);
+      return []; // Return an empty array in case of an error
     } finally {
       setIsSkeletonLoading(false);
     }
@@ -73,29 +77,55 @@ export default function TabOneScreen()  {
   useFocusEffect(
     useCallback(() => {
       if (user) {
-        fetchUserPreferences();
+        fetchUserPreferences(1, 10).then((initialApartments) => {
+          setApartments(initialApartments);
+        });
       }
     }, [user, filterOption])
   );
 
-
+  const fetchMoreApartments = async () => {
+    const currentTime = Date.now();
+    const throttleDelay = 1000; // Adjust the delay as needed (in milliseconds)
+  
+    if (currentTime - lastRequestTime < throttleDelay) {
+      return;
+    }
+  
+    setLastRequestTime(currentTime);
+  
+    const nextPage = Math.floor(apartments.length / 10) + 1;
+    const newApartments = await fetchUserPreferences(nextPage, 10);
+    setApartments((prevApartments) => [...prevApartments, ...newApartments]);
+  };
   const listData = isSkeletonLoading ? dummy : apartments;
   return (
     <View className="flex-1 items-center justify-center">
-      <FlatList
-        data={listData}
-        className="flex-grow w-11/12"
-        keyExtractor={(item, index) => `${item.propertyId}-${item.key}-${index}`}
-        renderItem={({ item: apartment }) => (
-          <ApartmentItem
-            apartment={apartment}
-            token={token}
-            isSkeletonLoading={isSkeletonLoading}
-            showScore={true}
-            onPress={() => openModal(apartment)}
-          />
-        )}
-      />
+    <FlatList
+      ref={flatListRef}
+      data={listData}
+      className="flex-grow w-11/12"
+      keyExtractor={(item, index) => `${item.propertyId}-${item.key}-${index}`}
+      renderItem={({ item: apartment }) => (
+        <ApartmentItem
+          apartment={apartment}
+          token={token}
+          isSkeletonLoading={isSkeletonLoading}
+          showScore={true}
+          onPress={() => openModal(apartment)}
+        />
+      )}
+      onEndReached={({ distanceFromEnd }) => {
+        if (distanceFromEnd < 0) return;
+        fetchMoreApartments();
+      }}
+      onEndReachedThreshold={0.5}
+      onScroll={({ nativeEvent }) => {
+        if (isCloseToBottom(nativeEvent)) {
+          fetchMoreApartments();
+        }
+      }}
+    />
     </View>
   );
 }
