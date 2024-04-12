@@ -3,6 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
 import React, {useEffect, useState} from 'react'
 import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapViewDirections from 'react-native-maps-directions';
 import {ApartmentUnitRecommendation} from "@/src/types";
 import {useAuth} from "@clerk/clerk-expo";
 import ApartmentItem from '@/src/components/ApartmentItem';
@@ -44,7 +45,7 @@ const MapPage = ({}: MapPageProps) => {
 
       if (Array.isArray(transformedApartments)) { // Check if data is an array
         transformedApartments.forEach((item, index) => {
-          // console.log(`Item ${index}:`, item['name'], item['propertyId']);
+          console.log(`Item ${index}:`, item['apt_latitude'], item['apt_longitude']);
         });
       } else {
         console.log(transformedApartments); // If not an array, log the whole response
@@ -80,20 +81,18 @@ const MapPage = ({}: MapPageProps) => {
 
   const [coordinates] = useState([
     {
-      latitude: 48.8587741,
-      longitude: 2.2069771,
+      latitude: 30.61876,
+      longitude: -96.35037,
     },
     {
-      latitude: 48.8323785,
-      longitude: 2.3361663,
+      latitude:30.6187,
+      longitude:-96.3365,
     },
   ]);
 
   const [showModal, setShowModal] = useState(false);
   const [selectedApartmentData, setSelectedApartmentData] = useState<ApartmentUnitRecommendation[]>([]);
   const handleMarkerPress = (aptPropertyID : any) => {
-    console.log(aptPropertyID)
-    // setSelectedApartmentData(apartmentData);
     const aptUnit : any = [];
     apartmentData.forEach((item, index) => {
       if (item.propertyId === aptPropertyID) {
@@ -113,13 +112,14 @@ const MapPage = ({}: MapPageProps) => {
           provider={PROVIDER_GOOGLE}
         >
 
-          {/*<MapViewDirections*/}
-          {/*  origin={coordinates[0]}*/}
-          {/*  destination={coordinates[1]}*/}
-          {/*  apikey={PROVIDER_GOOGLE} // insert your API Key here*/}
-          {/*  strokeWidth={4}*/}
-          {/*  strokeColor="#111111"*/}
-          {/*/>*/}
+          <MapViewDirections
+            origin={coordinates[0]}
+            destination={coordinates[1]}
+            apikey={''} // insert your API Key here
+            strokeWidth={4}
+            strokeColor="#111111"
+            precision={'high'}
+          />
 
 
           {userLocation && (
