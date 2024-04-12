@@ -7,6 +7,7 @@ import MapViewDirections from 'react-native-maps-directions';
 import {ApartmentUnitRecommendation} from "@/src/types";
 import {useAuth} from "@clerk/clerk-expo";
 import ApartmentItem from '@/src/components/ApartmentItem';
+import {useFilter} from "@/src/components/FilterContext";
 
 
 interface MapPageProps {}
@@ -16,14 +17,18 @@ const MapPage = ({}: MapPageProps) => {
   const [initialRegion, setinitialRegion] = useState<any>();
   const [token, setToken] = useState<string | null>(null);
   const [apartmentData, setApartmentData] = useState<ApartmentUnitRecommendation[]>([]);
-
+  const {filterOption} = useFilter();
   const { getToken } = useAuth();
+
+  const GOOGLE_API_KEY = '';
 
   const fetchUserPreferences = async () => {
     const newToken = await getToken();
     setToken(newToken);
     try {
       const apiURL = `${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/get_recommendations`;
+
+
       const response = await fetch(apiURL, {
         method: 'GET',
         headers: {
@@ -41,15 +46,18 @@ const MapPage = ({}: MapPageProps) => {
         ...apartment,
         match: Number((apartment.score / maxScore) * 100).toFixed(0).toString(),
       }));
+      if (filterOption === 'Currently Available') {
+        transformedApartments = transformedApartments.filter(apartment => apartment.hasKnownAvailabilities);
+      }
       setApartmentData(transformedApartments)
 
-      if (Array.isArray(transformedApartments)) { // Check if data is an array
-        transformedApartments.forEach((item, index) => {
-          console.log(`Item ${index}:`, item['apt_latitude'], item['apt_longitude']);
-        });
-      } else {
-        console.log(transformedApartments); // If not an array, log the whole response
-      }
+      // if (Array.isArray(transformedApartments)) { // Check if data is an array
+      //   transformedApartments.forEach((item, index) => {
+      //     console.log(`Item ${index}:`, item['apt_latitude'], item['apt_longitude']);
+      //   });
+      // } else {
+      //   console.log(transformedApartments); // If not an array, log the whole response
+      // }
 
 
     } catch (error) {
@@ -79,28 +87,64 @@ const MapPage = ({}: MapPageProps) => {
 
   }, []);
 
+  const [selectedAptCoords, setSelectedAptCoords] = useState([])
   const [coordinates] = useState([
-    {
-      latitude: 30.61876,
-      longitude: -96.35037,
-    },
+    // main a&m coords
     {
       latitude:30.6187,
       longitude:-96.3365,
     },
+
+    // Zachry building
+    {
+      latitude:30.621235399503348,
+      longitude:-96.34037796577928,
+    },
+
+    // business building
+    {
+      latitude:30.610724837768895,
+      longitude:-96.35093745247472,
+    },
+  ]);
+  const [routesInfo, setRoutesInfo] = useState([
+    { destination: coordinates[0], duration: null }, // A&M coords
+    { destination: coordinates[1], duration: null }, // Zachry building
+    { destination: coordinates[2], duration: null }  // Business building
   ]);
 
   const [showModal, setShowModal] = useState(false);
   const [selectedApartmentData, setSelectedApartmentData] = useState<ApartmentUnitRecommendation[]>([]);
+  const [routeDuration, setRouteDuration] = useState(null);
+  // display a new page with apartment unit at that marker
   const handleMarkerPress = (aptPropertyID : any) => {
-    const aptUnit : any = [];
+    const aptUnits : any = [];
     apartmentData.forEach((item, index) => {
       if (item.propertyId === aptPropertyID) {
-        aptUnit.push(item)
+        aptUnits.push(item);
       }
     });
-    setSelectedApartmentData(aptUnit);
+    setSelectedApartmentData(aptUnits);
     setShowModal(true);
+  }
+
+  // highlight the route to one of the coords on campus
+  const handleRouteToCampus = (aptPropertyID : any) => {
+    let selectedCoords: any = null;
+    apartmentData.forEach(item => {
+      if (item.propertyId === aptPropertyID && !selectedCoords) {
+        selectedCoords = { latitude: item.apt_latitude, longitude: item.apt_longitude };
+      }
+    });
+
+    if (selectedCoords) {
+      const updatedRoutes = routesInfo.map(route => ({
+        ...route,
+        origin: selectedCoords,
+        duration: null // Reset duration when new route is calculated
+      }));
+      setRoutesInfo(updatedRoutes);
+    }
   }
 
   return (
@@ -112,14 +156,23 @@ const MapPage = ({}: MapPageProps) => {
           provider={PROVIDER_GOOGLE}
         >
 
-          <MapViewDirections
-            origin={coordinates[0]}
-            destination={coordinates[1]}
-            apikey={''} // insert your API Key here
-            strokeWidth={4}
-            strokeColor="#111111"
-            precision={'high'}
-          />
+          {routesInfo.map((route, index) => (
+            route.origin && (
+              <MapViewDirections
+                key={index}
+                origin={route.origin}
+                destination={route.destination}
+                apikey={GOOGLE_API_KEY}
+                strokeWidth={4}
+                strokeColor={['#FF6347', '#4682B4', '#32CD32'][index % 3]} // Use different colors for each route
+                onReady={(result) => {
+                  const newRoutesInfo = [...routesInfo];
+                  newRoutesInfo[index].duration = result.duration;
+                  setRoutesInfo(newRoutesInfo);
+                }}
+              />
+            )
+          ))}
 
 
           {userLocation && (
@@ -132,21 +185,29 @@ const MapPage = ({}: MapPageProps) => {
             />
           )}
 
-          <Marker
-            coordinate={{
-              latitude:30.6187,
-              longitude:-96.3365,
-            }}
-            title="Texas A&M University"
-          />
+          {coordinates.map((coord, index) => (
+            <Marker key={index} coordinate={coord}>
+              <Callout tooltip style={styles.callout}>
+                <View style={styles.calloutView}>
+                  <Text>{['Texas A&M University', 'Zachery Engineering Building', 'Mays Business School'][index]}</Text>
+                  {routesInfo[index].duration && <Text>Estimated travel time: {Math.round(routesInfo[index].duration)} minutes</Text>}
+                </View>
+              </Callout>
+            </Marker>
+          ))}
 
           {apartmentData.map((apartmentUnit, index) => (
             <Marker
-              key={apartmentUnit.propertyId + index}
+              key={`${apartmentUnit.propertyId}-${apartmentUnit.key}-${index}`}
               coordinate={{ latitude: apartmentUnit.apt_latitude, longitude: apartmentUnit.apt_longitude }}
               title={apartmentUnit.name}
+              onPress={ () => handleRouteToCampus(apartmentUnit.propertyId) }
             >
-              <Callout tooltip style={styles.callout} onPress={ () => handleMarkerPress(apartmentUnit.propertyId) }>
+              <Callout
+                tooltip
+                style={styles.callout}
+                onPress={ () => handleMarkerPress(apartmentUnit.propertyId) }
+              >
                 <View style={styles.calloutView}>
                   <Text>{apartmentUnit.name}</Text>
                   <Text>{apartmentUnit.address}</Text>
@@ -170,16 +231,16 @@ const MapPage = ({}: MapPageProps) => {
         onRequestClose={() => setShowModal(!showModal)}
       >
         <View style={styles.modalView}>
+          <TouchableOpacity style={styles.closeButton} onPress={() => setShowModal(false)}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
           <FlatList
             data={selectedApartmentData}
-            keyExtractor={(item) => item.propertyId.toString()}
+            keyExtractor={( item, index ) => `${item.propertyId}-${item.key}-${index}`}
             renderItem={({ item }) => (
               <ApartmentItem apartment={item} token={token} isSkeletonLoading={false} showScore={true} />
             )}
           />
-          <TouchableOpacity style={styles.closeButton} onPress={() => setShowModal(false)}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
         </View>
       </Modal>
     </View>
@@ -196,12 +257,10 @@ const styles = StyleSheet.create({
   },
   modalView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-    backgroundColor: 'white', // Set a background color for better visibility
+    marginTop: 100,
+    backgroundColor: 'white',
     borderRadius: 20,
-    padding: 20,
+    padding: 15,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -216,6 +275,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginTop: 20,
+    marginBottom: 20,
   },
   closeButtonText: {
     color: 'white',
@@ -236,6 +296,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
+    borderWidth: 2,
+    borderColor: '#000000'
   },
   calloutTitle: {
     fontWeight: 'bold',
