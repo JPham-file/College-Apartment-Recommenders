@@ -167,7 +167,7 @@ export default function TabTwoScreen() {
     fetchData();
   }, []);
 
-  const updateClassData = async (newData) => {
+  const updateClassData = async (newData: any) => {
     try {
       const options = {
         method: 'POST',
