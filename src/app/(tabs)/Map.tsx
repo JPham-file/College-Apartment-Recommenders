@@ -1,18 +1,21 @@
 import { FlatList, Modal, Text, StyleSheet, View, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import {ApartmentUnitRecommendation} from "@/src/types";
-import {useAuth} from "@clerk/clerk-expo";
+import {useAuth, useUser} from "@clerk/clerk-expo";
 import ApartmentItem from '@/src/components/ApartmentItem';
 import {useFilter} from "@/src/components/FilterContext";
+import {useFocusEffect} from "expo-router";
 
 
 interface MapPageProps {}
 
 const MapPage = ({}: MapPageProps) => {
+
+  const { user } = useUser();
   const [userLocation, setUserLocation] = useState<any>(null)
   const [initialRegion, setinitialRegion] = useState<any>();
   const [token, setToken] = useState<string | null>(null);
@@ -20,7 +23,7 @@ const MapPage = ({}: MapPageProps) => {
   const {filterOption} = useFilter();
   const { getToken } = useAuth();
 
-  const GOOGLE_API_KEY = '';
+  const GOOGLE_API_KEY : any = '';
 
   const fetchUserPreferences = async () => {
     const newToken = await getToken();
@@ -65,8 +68,16 @@ const MapPage = ({}: MapPageProps) => {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        fetchUserPreferences();
+      }
+    }, [user, filterOption])
+  );
+
   useEffect(() => {
-    fetchUserPreferences();
+
     const getLocation = async () => {
       let {status} = await Location.requestForegroundPermissionsAsync();
       if ( status !== 'granted') {
