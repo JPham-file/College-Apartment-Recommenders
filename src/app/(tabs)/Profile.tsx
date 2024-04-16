@@ -92,14 +92,7 @@ export default function TabTwoScreen() {
     'leaseTerms': "6 Months"
   });
 
-  const [classData, setClassData] = useState([
-    {
-      subject: 'CSCE',
-      course: '121',
-      section: '200',
-      id: 1,
-    }
-  ])
+  const [classData, setClassData] = useState([])
 
   const enableEdit = () => {
     setIsEditing(true);
@@ -151,23 +144,47 @@ export default function TabTwoScreen() {
     const fetchData = async () => {
       try {
         const options = {
-          method: 'POST',
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${await getToken()}`,
           },
-          body: JSON.stringify({ new_classes: classData }),
         };
-        const response = await fetch('/update_classes', options)
-        const result = await response.json();
-      } catch (error) {
-        console.error('Error fetching data: ', error);
-      }
-    }
+        const response = await fetch(`${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/get_classes`, options)
 
-    if (classData) {
-      fetchData()
+        console.log(response)
+        const data = await response.json()
+        
+        console.log(data)
+
+        setClassData(data);
+
+      } catch (error) {
+        console.error('Error fetching initial data:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+
+  const updateClassData = async (newData) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await getToken()}`,
+        },
+        body: JSON.stringify({ new_classes: newData }),
+      };
+      const response = await fetch(`${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/update_classes`, options)
+      const result = await response.json();
+
+      console.log(result)
+    } catch (error) {
+      console.error('Error updating data: ', error);
     }
-  }, [classData])
+  }
 
   const updateUserInDatabase = async (supabase: SupabaseClient) => {
     if (!supabase) {
@@ -265,6 +282,7 @@ export default function TabTwoScreen() {
               initialClasses={classData}
               onClassesUpdated={(classes: any) => {
                 setClassData(classes)
+                updateClassData(classes)
               }}
             />
 
