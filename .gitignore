@@ -16,3 +16,5 @@ coverage/
 **/.idea
 
 .expo/types/router.d.ts
+.expo/types/router.d.ts
+package-lock.json
