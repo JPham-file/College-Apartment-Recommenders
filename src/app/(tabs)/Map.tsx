@@ -23,7 +23,7 @@ const MapPage = ({}: MapPageProps) => {
   const {filterOption} = useFilter();
   const { getToken } = useAuth();
 
-  const GOOGLE_API_KEY : any = '';
+  const GOOGLE_API_KEY : any = process.env.EXPO_PUBLIC_GOOGLE_API_MAP;
 
   const fetchUserPreferences = async () => {
     const newToken = await getToken();
@@ -186,15 +186,15 @@ const MapPage = ({}: MapPageProps) => {
           ))}
 
 
-          {userLocation && (
-            <Marker
-              coordinate={{
-                latitude: userLocation.latitude,
-                longitude: userLocation.longitude,
-              }}
-              title="Your Location"
-            />
-          )}
+          {/*{userLocation && (*/}
+          {/*  <Marker*/}
+          {/*    coordinate={{*/}
+          {/*      latitude: userLocation.latitude,*/}
+          {/*      longitude: userLocation.longitude,*/}
+          {/*    }}*/}
+          {/*    title="Your Location"*/}
+          {/*  />*/}
+          {/*)}*/}
 
           {coordinates.map((coord, index) => (
             <Marker key={index} coordinate={coord}>
@@ -237,14 +237,14 @@ const MapPage = ({}: MapPageProps) => {
 
       <Modal
         animationType="slide"
-        transparent={true}
+        presentationStyle={'pageSheet'}
         visible={showModal}
         onRequestClose={() => setShowModal(!showModal)}
       >
         <View style={styles.modalView}>
-          <TouchableOpacity style={styles.closeButton} onPress={() => setShowModal(false)}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+          {/*<TouchableOpacity style={styles.closeButton} onPress={() => setShowModal(false)}>*/}
+          {/*  <Text style={styles.closeButtonText}>Close</Text>*/}
+          {/*</TouchableOpacity>*/}
           <FlatList
             data={selectedApartmentData}
             keyExtractor={( item, index ) => `${item.propertyId}-${item.key}-${index}`}
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     flex: 1,
-    marginTop: 100,
+    // marginTop: 100,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 15,
@@ -287,6 +287,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 20,
     marginBottom: 20,
+    marginRight: 300,
   },
   closeButtonText: {
     color: 'white',
