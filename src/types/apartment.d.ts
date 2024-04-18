@@ -21,6 +21,8 @@ export interface ApartmentUnit {
 }
 
 export interface ApartmentUnitRecommendation extends ApartmentUnit {
+  apt_longitude: number;
+  apt_latitude: number;
   score: number;
   match: string;
   isSaved?: boolean;

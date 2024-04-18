@@ -172,9 +172,12 @@ export default function TabLayout() {
         <Tabs.Screen
           name="Map"
           options={{
-            headerShown: false,
+            headerShown: true,
             tabBarIcon: ({color}) => <TabBarIcon name="map-marker" color={color}/>,
             tabBarShowLabel: false,
+            headerRight: () => (
+              <OptionsButton onPress={() => setShowOptions(true)}/>
+            ),
           }}
         />
         <Tabs.Screen
