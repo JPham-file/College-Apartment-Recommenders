@@ -1,11 +1,12 @@
 import { ApartmentUnitRecommendation } from '@/src/types';
 import { useUser, useAuth } from '@clerk/clerk-expo';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useContext } from 'react';
 import { FlatList, Image } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { View } from '@/src/components/Themed';
 import ApartmentItem from '@/src/components/ApartmentItem';
 import dummy from '@/src/lib/skeleton/mocks/ApartmentRecommendation';
+import { ApartmentContext } from '@/src/app/apartment/ApartmentContext';
 
 export default function SavedApartments() {
   const router = useRouter();
@@ -15,9 +16,10 @@ export default function SavedApartments() {
   const [apartments, setApartments] = useState<ApartmentUnitRecommendation[]>([]);
   const [token, setToken] = useState<string | null>(null);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState<boolean>(false);
+  const { setApartment } = useContext(ApartmentContext);
 
   const fetchUserPreferences = async () => {
-    setIsSkeletonLoading(false);
+    setIsSkeletonLoading(true);
     const newToken = await getToken();
     setToken(newToken);
 
@@ -54,9 +56,10 @@ export default function SavedApartments() {
 
 
   const openModal = (apartment: ApartmentUnitRecommendation) => {
+    setApartment(apartment);
     router.push({
       pathname: '/modal',
-      params: { apartment: JSON.stringify(apartment), showScore: 0 },
+      params: {  showScore: 0 },
     });
   };
 

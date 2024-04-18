@@ -7,21 +7,25 @@ import MatchPercentageBar from '../components/ApartmentItem/MatchPercentageBar';
 import MatchDetailTable from '../components/ApartmentItem/MatchDetailTable';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {openURL} from "expo-linking";
+import { ApartmentProvider } from '@/src/app/apartment/ApartmentContext';
+import React, { useContext } from 'react';
+import { ApartmentContext } from '@/src/app/apartment/ApartmentContext';
 
 export default function Modal() {
-  const router = useRouter();
-  const { apartment: apartmentString, showScore: visibleScore } = useLocalSearchParams();
 
+  const {  showScore: visibleScore } = useLocalSearchParams();
 
-  if (!apartmentString) {
+  
+
+  
+  const { apartment } = useContext(ApartmentContext);
+  if (!apartment){
     return null;
   }
 
-  const apartment: ApartmentUnitRecommendation = JSON.parse(apartmentString as string);
-
   const { name, modelName, address, modelImage, rent, photos, match, hasKnownAvailabilities, details, squareFeet,phoneNumber, description } = apartment;
 
-
+  
   return (
     <View className="flex-1">
       <ScrollView className="mt-12">
