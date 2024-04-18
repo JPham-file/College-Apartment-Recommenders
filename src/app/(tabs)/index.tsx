@@ -23,11 +23,6 @@ export default function TabOneScreen()  {
   const [lastRequestTime, setLastRequestTime] = useState<number>(0);
   const maxScore  = useRef<number>(1);
 
-  const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }: NativeScrollEvent) => {
-    const paddingToBottom = 20;
-    return layoutMeasurement.height + contentOffset.y >=
-      contentSize.height - paddingToBottom;
-  };
   const fetchUserPreferences = async (page: number, limit: number) => {
     setIsSkeletonLoading(false);
     const newToken = await getToken();
@@ -115,16 +110,9 @@ export default function TabOneScreen()  {
           onPress={() => openModal(apartment)}
         />
       )}
-      onEndReached={({ distanceFromEnd }) => {
-        if (distanceFromEnd < 0) return;
-        fetchMoreApartments();
-      }}
+      onEndReached={fetchMoreApartments}
       onEndReachedThreshold={0.5}
-      onScroll={({ nativeEvent }) => {
-        if (isCloseToBottom(nativeEvent)) {
-          fetchMoreApartments();
-        }
-      }}
+
     />
     </View>
   );
