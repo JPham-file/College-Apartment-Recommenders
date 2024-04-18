@@ -186,15 +186,15 @@ const MapPage = ({}: MapPageProps) => {
           ))}
 
 
-          {/*{userLocation && (*/}
-          {/*  <Marker*/}
-          {/*    coordinate={{*/}
-          {/*      latitude: userLocation.latitude,*/}
-          {/*      longitude: userLocation.longitude,*/}
-          {/*    }}*/}
-          {/*    title="Your Location"*/}
-          {/*  />*/}
-          {/*)}*/}
+          {userLocation && (
+            <Marker
+              coordinate={{
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+              }}
+              title="Your Location"
+            />
+          )}
 
           {coordinates.map((coord, index) => (
             <Marker key={index} coordinate={coord}>
