@@ -10,6 +10,11 @@ import { useColorScheme } from '@/src/components/useColorScheme';
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaView } from 'react-native';
 import {FilterProvider} from "@/src/components/FilterContext";
+import queryClient from '@/src/types/queryClient';
+import { QueryClientProvider } from 'react-query';
+import React from 'react';
+import { ApartmentProvider } from '@/src/app/apartment/ApartmentContext';
+
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -80,11 +85,17 @@ function RootLayoutNav() {
       tokenCache={tokenCache}
       publishableKey={CLERK_PUBLISHABLE_KEY}
     >
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-      </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ApartmentProvider>
+
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ headerTitle: 'Apartment Details', presentation: 'modal' }} />
+          </Stack>
+        </ThemeProvider>
+      </ApartmentProvider>
+    </QueryClientProvider>
     </ClerkProvider>
   );
 }
