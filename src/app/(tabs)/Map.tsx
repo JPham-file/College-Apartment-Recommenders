@@ -242,7 +242,6 @@ const MapPage = ({}: MapPageProps) => {
 
       <Modal
         animationType="slide"
-        // transparent={true}
         visible={showModal}
         onRequestClose={() => setShowModal(!showModal)}
         presentationStyle={"formSheet"}
@@ -293,6 +292,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 20,
     marginBottom: 20,
+    marginRight: 300,
   },
   closeButtonText: {
     color: 'white',

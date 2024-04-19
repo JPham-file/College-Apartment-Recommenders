@@ -1,30 +1,33 @@
 import { ApartmentUnitRecommendation } from '@/src/types';
 import React, { useState, memo } from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
+import { View, Text, Image, Pressable, Modal } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import classNames from 'classnames';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MatchPercentageBar from './MatchPercentageBar';
 import MatchDetailTable from './MatchDetailTable';
 import { addSkeleton, skeleton, SkeletonAnimated } from '@/src/lib/skeleton';
+import ModalScreen from '@/src/app/modal';
 
 export interface ApartmentItemProps {
   apartment: ApartmentUnitRecommendation;
   token: string | null;
   isSkeletonLoading: boolean;
-  showScore: boolean
+  showScore: boolean;
+  onPress: () => void;
 }
 
 const ApartmentItem = (props: ApartmentItemProps) => {
   
-  const { apartment, token, isSkeletonLoading, showScore } = props;
-  const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, hasKnownAvailabilities , isSaved: originallySavedByUser } = apartment;
+  const { apartment, token, isSkeletonLoading, showScore, onPress } = props;
+  const { name, modelName, address, modelImage, rent, photos, match, key, propertyId, hasKnownAvailabilities, isSaved: originallySavedByUser, phoneNumber } = apartment;
 
 
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
   const [isSaved, setIsSaved] = useState<boolean>(!!originallySavedByUser);
 
   const rotation = useSharedValue(0);
+
 
   const saveApartment = async () => {
     setIsSaved(true);
@@ -74,24 +77,6 @@ const ApartmentItem = (props: ApartmentItemProps) => {
     }
   }
 
-  const renderExpandableButton = () => {
-    if (isExpanded) {
-      return (
-        <Pressable onPress={() => setIsExpanded(false)}>
-          {/* color is neutral-400 in tailwind - unable to use className for FontAwesome icons */}
-          <FontAwesome name="angle-up" size={24} color="#a1a1aa" />
-        </Pressable>
-      );
-    }
-
-    return (
-      <Pressable onPress={() => setIsExpanded(true)}>
-        {/* color is neutral-400 in tailwind - unable to use className for FontAwesome icons */}
-        <FontAwesome name="angle-down" size={24} color="#a1a1aa" />
-      </Pressable>
-    );
-  }
-
   const renderSaveApartmentButton = () => {
     const fillColor = isSaved ? '#dc2626' : '#000';
     const heartClass = classNames('absolute', { 'opacity-60': !isSaved });
@@ -123,6 +108,7 @@ const ApartmentItem = (props: ApartmentItemProps) => {
   const [availability, setAvailability] = useState<boolean>(false)
 
   return (
+  <Pressable onPress={onPress}>
     <View className="flex my-3">
       <View className="py-0 z-10">
         <SkeletonAnimated isLoading={isSkeletonLoading}>
@@ -143,10 +129,6 @@ const ApartmentItem = (props: ApartmentItemProps) => {
               </View>
 
               <View className={textContainerClass}>
-                <Text className={availableClass}>AVAILABILITY: {hasKnownAvailabilities ? 'NOW' : 'NONE'} </Text>
-              </View>
-
-              <View className={textContainerClass}>
                 <Text className={addressClass}>{address.substring(address.indexOf(','))}</Text>
               </View>
               <View className={textContainerClass}>
@@ -155,13 +137,10 @@ const ApartmentItem = (props: ApartmentItemProps) => {
             </View>
             {showScore && <MatchPercentageBar percentage={Number(match)} fill="#f5f5f5" isSkeletonLoading={isSkeletonLoading} /> }
           </View>
-          {!isSkeletonLoading && isExpanded && <MatchDetailTable apartment={apartment} />}
-          <View className="flex flex-row justify-center items-center">
-            {!isSkeletonLoading && renderExpandableButton()}
-          </View>
         </SkeletonAnimated>
       </View>
     </View>
+   </Pressable>
   );
 };
 

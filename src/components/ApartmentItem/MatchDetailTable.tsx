@@ -13,19 +13,20 @@ const MatchDetailTable = (props: MatchDetailProps) => {
   const { apartment, delayOffset = 50 } = props;
   const { details, squareFeet } = apartment;
 
+
   return (
     <View className="flex flex-row my-4 p-2 shadow justify-around items-center">
       <View className="flex flex-row gap-2 items-end">
-        <FontAwesome name="bed" size={20} />
-        <Text className="">{details[0]}</Text>
+        <FontAwesome name="bed" color='white' size={20} />
+        <Text className="text-white">{details[0]}</Text>
       </View>
       <View className="flex flex-row gap-2 px-2 items-end">
-        <FontAwesome name="bath" size={20} />
-        <Text className="">{details[1]}</Text>
+        <FontAwesome name="bath" color='white' size={20} />
+        <Text className="text-white">{details[1]}</Text>
       </View>
       <View className="flex flex-row gap-2 items-end">
-        <FontAwesome5 name="ruler-combined" size={20} />
-        <Text className="">{squareFeet} sqft</Text>
+        <FontAwesome5 name="ruler-combined" color='white' size={20} />
+        <Text className="text-white">{squareFeet} sqft</Text>
       </View>
     </View>
   );
