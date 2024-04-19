@@ -39,6 +39,7 @@ function OptionsButton({onPress}: {
       onPress={onPress}
       style={{
         padding: 10,
+        marginRight: 10,
         backgroundColor: 'rgb(95,169,234)',
         borderRadius: 10}}
     >
@@ -146,6 +147,11 @@ export default function TabLayout() {
           // Disable the static render of the header on web
           // to prevent a hydration error in React Navigation v6.
           headerShown: useClientOnlyValue(false, true),
+          headerStyle: {
+            // backgroundColor: 'transparent', // Make header background transparent
+            elevation: 0, // Remove shadow on Android
+            shadowOpacity: 0, // Remove shadow on iOS
+          },
         }}>
         <Tabs.Screen
           name="index"
@@ -172,7 +178,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="Map"
           options={{
-            headerShown: true,
+            headerShown: false,
             tabBarIcon: ({color}) => <TabBarIcon name="map-marker" color={color}/>,
             tabBarShowLabel: false,
             headerRight: () => (

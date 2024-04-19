@@ -164,7 +164,7 @@ const MapPage = ({}: MapPageProps) => {
         <MapView
           style={styles.map}
           initialRegion={initialRegion}
-          provider={PROVIDER_GOOGLE}
+          // provider={PROVIDER_GOOGLE}
         >
 
           {routesInfo.map((route, index) => (
@@ -213,7 +213,12 @@ const MapPage = ({}: MapPageProps) => {
               coordinate={{ latitude: apartmentUnit.apt_latitude, longitude: apartmentUnit.apt_longitude }}
               title={apartmentUnit.name}
               onPress={ () => handleRouteToCampus(apartmentUnit.propertyId) }
+
             >
+              <Image
+                source={require('../../../assets/images/markers/apartment2.png')}
+                style={styles.markerImage}
+              />
               <Callout
                 tooltip
                 style={styles.callout}
@@ -264,7 +269,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '100%',
-    height: '100%',
+    height: '135%',
   },
   modalView: {
     flex: 1,
@@ -321,5 +326,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'red',
   },
+  markerImage: {
+    width: 40,
+    height: 40
+  }
 });
 export default MapPage;
