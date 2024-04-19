@@ -23,7 +23,7 @@ const MapPage = ({}: MapPageProps) => {
   const {filterOption} = useFilter();
   const { getToken } = useAuth();
 
-  const GOOGLE_API_KEY : any = '';
+  const GOOGLE_API_KEY : any = process.env.EXPO_PUBLIC_GOOGLE_API_MAP;
 
   const fetchUserPreferences = async () => {
     const newToken = await getToken();
@@ -175,7 +175,7 @@ const MapPage = ({}: MapPageProps) => {
                 destination={route.destination}
                 apikey={GOOGLE_API_KEY}
                 strokeWidth={4}
-                strokeColor={['#FF6347', '#4682B4', '#32CD32'][index % 3]} // Use different colors for each route
+                strokeColor={['#ff2700', '#0c16d3', '#32CD32'][index % 3]} // Use different colors for each route
                 onReady={(result) => {
                   const newRoutesInfo = [...routesInfo];
                   newRoutesInfo[index].duration = result.duration;
@@ -242,14 +242,15 @@ const MapPage = ({}: MapPageProps) => {
 
       <Modal
         animationType="slide"
-        transparent={true}
+        // transparent={true}
         visible={showModal}
         onRequestClose={() => setShowModal(!showModal)}
+        presentationStyle={"formSheet"}
       >
         <View style={styles.modalView}>
-          <TouchableOpacity style={styles.closeButton} onPress={() => setShowModal(false)}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+          {/*<TouchableOpacity style={styles.closeButton} onPress={() => setShowModal(false)}>*/}
+          {/*  <Text style={styles.closeButtonText}>Close</Text>*/}
+          {/*</TouchableOpacity>*/}
           <FlatList
             data={selectedApartmentData}
             keyExtractor={( item, index ) => `${item.propertyId}-${item.key}-${index}`}
@@ -269,11 +270,11 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '100%',
-    height: '135%',
+    height: '100%',
   },
   modalView: {
     flex: 1,
-    marginTop: 100,
+    // marginTop: 100,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 15,
