@@ -67,6 +67,9 @@ export default function TabOneScreen() {
     }
   );
 
+
+
+
   const apartments = data?.pages.flatMap((page) => page) || [];
 
   const openModal = (apartment: ApartmentUnitRecommendation) => {
