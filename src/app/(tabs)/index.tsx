@@ -22,6 +22,7 @@ export default function TabOneScreen()  {
     const newToken = await getToken();
     setToken(newToken);
 
+    console.log(newToken)
 
     try {
       const apiURL = `${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/get_recommendations`;
