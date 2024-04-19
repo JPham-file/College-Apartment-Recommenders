@@ -164,7 +164,7 @@ const MapPage = ({}: MapPageProps) => {
         <MapView
           style={styles.map}
           initialRegion={initialRegion}
-          provider={PROVIDER_GOOGLE}
+          // provider={PROVIDER_GOOGLE}
         >
 
           {routesInfo.map((route, index) => (
@@ -175,7 +175,7 @@ const MapPage = ({}: MapPageProps) => {
                 destination={route.destination}
                 apikey={GOOGLE_API_KEY}
                 strokeWidth={4}
-                strokeColor={['#FF6347', '#4682B4', '#32CD32'][index % 3]} // Use different colors for each route
+                strokeColor={['#ff2700', '#0c16d3', '#32CD32'][index % 3]} // Use different colors for each route
                 onReady={(result) => {
                   const newRoutesInfo = [...routesInfo];
                   newRoutesInfo[index].duration = result.duration;
@@ -213,7 +213,12 @@ const MapPage = ({}: MapPageProps) => {
               coordinate={{ latitude: apartmentUnit.apt_latitude, longitude: apartmentUnit.apt_longitude }}
               title={apartmentUnit.name}
               onPress={ () => handleRouteToCampus(apartmentUnit.propertyId) }
+
             >
+              <Image
+                source={require('../../../assets/images/markers/apartment2.png')}
+                style={styles.markerImage}
+              />
               <Callout
                 tooltip
                 style={styles.callout}
@@ -237,9 +242,9 @@ const MapPage = ({}: MapPageProps) => {
 
       <Modal
         animationType="slide"
-        presentationStyle={'pageSheet'}
         visible={showModal}
         onRequestClose={() => setShowModal(!showModal)}
+        presentationStyle={"formSheet"}
       >
         <View style={styles.modalView}>
           {/*<TouchableOpacity style={styles.closeButton} onPress={() => setShowModal(false)}>*/}
@@ -322,5 +327,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'red',
   },
+  markerImage: {
+    width: 40,
+    height: 40
+  }
 });
 export default MapPage;
