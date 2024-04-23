@@ -203,7 +203,7 @@ export default function TabTwoScreen() {
       .eq("id", user!.id);
 
     if (error) {
-      console.error("Error updating user in Supabase:", error.message);
+      console.log("Error updating user in Supabase:", error.message);
     }
   };
 
