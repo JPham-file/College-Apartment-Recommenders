@@ -123,7 +123,7 @@ export const UserPrompt = () => {
       <Text className="text-neutral-100">Maximum budget: {budget}</Text>
       <Slider
         style={styles.slider}
-        minimumValue={300}
+        minimumValue={400}
         maximumValue={4000}
         step={100}
         value={budget}

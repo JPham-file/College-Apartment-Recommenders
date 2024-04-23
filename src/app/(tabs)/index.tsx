@@ -1,7 +1,7 @@
 import { ApartmentUnitRecommendation } from '@/src/types';
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import React, { useState, useRef, useContext } from 'react';
-import { FlatList, Text } from 'react-native';
+import { FlatList, Text, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { View } from '@/src/components/Themed';
 import ApartmentItem from '@/src/components/ApartmentItem';
@@ -18,6 +18,7 @@ export default function TabOneScreen() {
   const [token, setToken] = useState<string | null>(null);
   const maxScore = useRef<number>(1);
   const { setApartment } = useContext(ApartmentContext);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchUserPreferences = async ({ pageParam = 1 }): Promise<ApartmentUnitRecommendation[]> => {
     const newToken = await getToken();
@@ -56,6 +57,7 @@ export default function TabOneScreen() {
     isLoading,
     isError,
     error,
+    refetch,
   } = useInfiniteQuery<ApartmentUnitRecommendation[], Error>(
     ['userPreferences', filterOption],
     fetchUserPreferences,
@@ -97,6 +99,12 @@ export default function TabOneScreen() {
     }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
+
   if (isError) {
     return <Text>Error: {error.message}</Text>;
   }
@@ -110,6 +118,12 @@ export default function TabOneScreen() {
         renderItem={renderApartmentItem}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
       />
     </View>
   );
