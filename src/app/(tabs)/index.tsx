@@ -118,7 +118,7 @@ export default function TabOneScreen() {
         renderItem={renderApartmentItem}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
-        refreshControl={
+                refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
