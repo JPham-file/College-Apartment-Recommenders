@@ -42,7 +42,7 @@ const leaseTerms = [
   { value: "12 Months", label: '12 Months' },
 ];
 
-const maxRentOptions = Array.from({ length: (4000 - 300) / 100 + 1 }, (_, i) => ({ value: `${300 + i * 100}`, label: `${300 + i * 100}` }));
+const maxRentOptions = Array.from({ length: (4000 - 400) / 100 + 1 }, (_, i) => ({ value: `${400 + i * 100}`, label: `${400 + i * 100}` }));
 
 
 const PreferenceItem: React.FC<Preference> = ({ text, defaultValue, onValueChange, isEditing, data }) => (
@@ -112,20 +112,15 @@ export default function TabTwoScreen() {
 
   const discardEdit = () => {
     setIsEditing(false);
-    console.log(DBvalues)
     setLocalValues(DBvalues);
   };
 
 
   useEffect(() => {
     const initSupabaseAndFetchUser = async () => {
-      console.log("Init Supabase and Fetch User effect triggered");
       if (isLoaded && isSignedIn && user) {
-        console.log("User is loaded and signed in, attempting to get token...");
         const token = await getToken({ template: "supabase-jwt-token" });
-        console.log(`Token received: ${token ? "Yes" : "No"}`);
         const initializedSupabase = await db(token!);
-        console.log("Supabase client initialized:", !!initializedSupabase);
         setSupabase(initializedSupabase)
 
       }
@@ -151,11 +146,8 @@ export default function TabTwoScreen() {
           },
         };
         const response = await fetch(`${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/get_classes`, options)
-
-        console.log(response)
         const data = await response.json()
         
-        console.log(data)
 
         setClassData(data);
 
@@ -180,13 +172,19 @@ export default function TabTwoScreen() {
       const response = await fetch(`${process.env.EXPO_PUBLIC_RECOMMENDATION_API_URL}/update_classes`, options)
       const result = await response.json();
 
-      console.log(result)
+
     } catch (error) {
       console.error('Error updating data: ', error);
     }
   }
 
   const updateUserInDatabase = async (supabase: SupabaseClient) => {
+    const token = await getToken({ template: "supabase-jwt-token" });
+    const initializedSupabase = await db(token!);
+
+    setSupabase(initializedSupabase);
+
+    
     if (!supabase) {
       console.log('Supabase client is not initialized');
       return;
@@ -195,7 +193,6 @@ export default function TabTwoScreen() {
       max_rent: localValues.maxRent,
       roommates: localValues.numRoommates
     };
-    console.log(`Preparing to update user data for email: `);
 
     const { error } = await supabase
       .from("User")
@@ -206,7 +203,7 @@ export default function TabTwoScreen() {
       .eq("id", user!.id);
 
     if (error) {
-      console.error("Error updating user in Supabase:", error.message);
+      console.log("Error updating user in Supabase:", error.message);
     }
   };
 
@@ -245,20 +242,7 @@ export default function TabTwoScreen() {
                   isEditing={isEditing}
                   data={maxRentOptions}
                 />
-                <PreferenceItem
-                  text="Campus Proximity"
-                  defaultValue={localValues.campusProximity}
-                  onValueChange={(val) => setLocalValues({ ...localValues, "campusProximity": val })}
-                  isEditing={isEditing}
-                  data={priorityOptions}
-                />
-                <PreferenceItem
-                  text="Public Transportation"
-                  defaultValue={localValues.publicTransportation}
-                  onValueChange={(val) => setLocalValues({ ...localValues, "publicTransportation": val })}
-                  isEditing={isEditing}
-                  data={priorityOptions}
-                />
+                
                 <PreferenceItem
                   text="Number of Roommates"
                   defaultValue={localValues.numRoommates?.toString() || "0"}
@@ -275,6 +259,25 @@ export default function TabTwoScreen() {
                   data={leaseTerms}
                 />
 
+                  {!isEditing ?
+                    <View className="flex w-full items-end">
+                      <TouchableOpacity onPress={enableEdit} className="bg-gray-1000 py-2 rounded-full">
+                        <Image source={profileEditButton} className="w-12 h-12" />
+                      </TouchableOpacity>
+                      {/* <Text className="text-gray-300 self-center mt-2 text-base">Edit</Text> */}
+                    </View>
+
+                    :
+                    <View className="flex-row justify-around py-4 my-0.5 bg-gray-1000">
+                      <TouchableOpacity onPress={discardEdit} className="">
+                        <Text className="text-white text-lg">Cancel</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity onPress={saveEdit} className="">
+                        <Text className="text-white text-lg">Save</Text>
+                      </TouchableOpacity>
+                    </View>
+                  }
               </View>
             </View>
 
@@ -306,25 +309,6 @@ export default function TabTwoScreen() {
             </Pressable>
           </View>
           <View className="flex w-full justify-end py-2">
-            {!isEditing ?
-              <View className="flex w-full items-end">
-                <TouchableOpacity onPress={enableEdit} className="bg-gray-1000 py-2 rounded-full">
-                  <Image source={profileEditButton} className="w-12 h-12" />
-                </TouchableOpacity>
-                {/* <Text className="text-gray-300 self-center mt-2 text-base">Edit</Text> */}
-              </View>
-
-              :
-              <View className="flex-row justify-around py-4 my-0.5 bg-gray-1000">
-                <TouchableOpacity onPress={discardEdit} className="">
-                  <Text className="text-white text-lg">Cancel</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={saveEdit} className="">
-                  <Text className="text-white text-lg">Save</Text>
-                </TouchableOpacity>
-              </View>
-            }
           </View>
         </View>
       </View>

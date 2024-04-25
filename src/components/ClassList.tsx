@@ -115,7 +115,7 @@ export function ClassList({ initialClasses, onClassesUpdated }: ClassListProps) 
 		<View className="flex-row justify-between items-center">
 			<Text className="text-white text-lg font-bold">Classes</Text>
 			<View className="flex-row">
-				{initialClasses != currentClasses && (
+				{JSON.stringify(initialClasses) != JSON.stringify(currentClasses) && (
 					<Fragment>
 						<Button
 							text={"Save"}
