@@ -98,10 +98,10 @@ const ApartmentItem = (props: ApartmentItemProps) => {
   }
 
   const textContainerClass = addSkeleton('rounded-full my-1', isSkeletonLoading, false);
-  const nameClass = addSkeleton('text-base font-bold', isSkeletonLoading);
+  const nameClass = addSkeleton('text-base text-neutral-300 font-bold', isSkeletonLoading);
   const availableClass = addSkeleton('text-base font-bold', isSkeletonLoading);
-  const addressClass = addSkeleton('text-sm -my-1', isSkeletonLoading);
-  const rentClass = addSkeleton('text-2xl font-bold ', isSkeletonLoading);
+  const addressClass = addSkeleton('text-sm -my-1 text-neutral-300', isSkeletonLoading);
+  const rentClass = addSkeleton('text-2xl font-bold text-neutral-300', isSkeletonLoading);
   const imageClass = addSkeleton('w-full h-56 rounded-lg', isSkeletonLoading, false);
 
   // console.log('hasKnownAvailabilities', hasKnownAvailabilities)
@@ -120,7 +120,7 @@ const ApartmentItem = (props: ApartmentItemProps) => {
         </SkeletonAnimated>
         {!isSkeletonLoading && renderSaveApartmentButton()}
       </View>
-      <View className="py-2 px-3.5 bg-neutral-100 rounded-lg z-20 -mt-4">
+      <View className="py-2 px-3.5 bg-zinc-800 rounded-lg z-20 -mt-4">
         <SkeletonAnimated isLoading={isSkeletonLoading}>
           <View className="flex flex-row justify-between">
             <View className="flex-col flex-initial">

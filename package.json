@@ -12,14 +12,18 @@
     "lint": "echo \"linter needs to be configured\" && exit 0"
   },
   "dependencies": {
+    "@aws-amplify/react-native": "^1.0.28",
     "@clerk/clerk-expo": "^0.20.5",
     "@expo/vector-icons": "^14.0.0",
+    "@react-native-async-storage/async-storage": "^1.23.1",
+    "@react-native-community/netinfo": "^11.3.1",
     "@react-native-community/slider": "^4.5.0",
     "@react-native-picker/picker": "2.6.1",
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.0.2",
     "@supabase/supabase-js": "^2.39.7",
     "@types/react-native-snap-carousel": "^3.8.10",
+    "aws-amplify": "^6.0.29",
     "classnames": "^2.5.1",
     "expo": "~50.0.7",
     "expo-app-loading": "^2.1.1",

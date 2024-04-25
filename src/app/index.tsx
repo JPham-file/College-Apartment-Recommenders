@@ -3,8 +3,20 @@ import { useRouter, Link } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { useDatabaseUser } from '@/src/hooks/useDatabaseUser';
-import Carousel from 'react-native-reanimated-carousel';
 import { Asset, useAssets } from 'expo-asset';
+import { Amplify } from 'aws-amplify';
+import config from '@/amplifyconfiguration.json';
+
+Amplify.configure(config);
+
+Amplify.configure({
+  ...Amplify.getConfig(),
+  Analytics: {
+    KinesisFirehose: {
+      region: process.env.EXPO_PUBLIC_ANALYTICS_REGION || "",
+    },
+  },
+});
 
 export default function App() {
     const { user, isLoaded } = useDatabaseUser();

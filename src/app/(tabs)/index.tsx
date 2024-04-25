@@ -78,7 +78,7 @@ export default function TabOneScreen() {
     setApartment(apartment);
     router.push({
       pathname: '/modal',
-      params: {  showScore: 1 },
+      params: {  showScore: 0 },
     });
     
   };
@@ -88,7 +88,7 @@ export default function TabOneScreen() {
       apartment={item}
       token={token}
       isSkeletonLoading={isLoading}
-      showScore={true}
+      showScore={false}
       onPress={() => openModal(item)}
     />
   );
