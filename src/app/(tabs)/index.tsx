@@ -86,7 +86,7 @@ export default function TabOneScreen() {
       apartment={item}
       token={token}
       isSkeletonLoading={isLoading}
-      showScore={true}
+      showScore={false}
       onPress={() => openModal(item)}
     />
   );

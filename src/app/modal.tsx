@@ -1,23 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import { Platform, Pressable, ScrollView, Image } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
-import { ApartmentUnitRecommendation } from '@/src/types';
-import { FontAwesome, FontAwesome5 } from '@expo/vector-icons/';
-import MatchPercentageBar from '../components/ApartmentItem/MatchPercentageBar';
-import MatchDetailTable from '../components/ApartmentItem/MatchDetailTable';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { FontAwesome } from '@expo/vector-icons/';
+import MatchPercentageBar from '@/src/components/ApartmentItem/MatchPercentageBar';
+import MatchDetailTable from '@/src/components/ApartmentItem/MatchDetailTable';
+import { useLocalSearchParams } from 'expo-router';
 import {openURL} from "expo-linking";
-import { ApartmentProvider } from '@/src/app/apartment/ApartmentContext';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ApartmentContext } from '@/src/app/apartment/ApartmentContext';
+import record, { APARTMENT_DETAILS_VIEW_START, APARTMENT_DETAILS_VIEW_END } from '@/src/lib/EventStream';
+import { useUser } from '@clerk/clerk-react';
 
 export default function Modal() {
-
+  const { user } = useUser();
   const {  showScore: visibleScore } = useLocalSearchParams();
+  const [viewStartTime, setViewStartTime] = useState<Date>(new Date());
 
-  
-
-  
   const { apartment } = useContext(ApartmentContext);
   if (!apartment){
     return null;
@@ -25,7 +23,33 @@ export default function Modal() {
 
   const { name, modelName, address, modelImage, rent, photos, match, hasKnownAvailabilities, details, squareFeet,phoneNumber, description } = apartment;
 
-  
+  useEffect(() => {
+    const startTime = new Date();
+    setViewStartTime(startTime)
+    const startPayload = {
+      userId: user?.id,
+      sessionId: user?.id,
+      apartmentProperty: apartment,
+      apartmentUnit: apartment,
+    }
+    record(APARTMENT_DETAILS_VIEW_START, startPayload);
+
+    return () => {
+      const endTime = new Date();
+      const diff = endTime.getTime() - (new Date(viewStartTime).getTime());
+      const endPayload = {
+        userId: user?.id,
+        sessionId: user?.id,
+        apartmentProperty: apartment,
+        apartmentUnit: apartment,
+        totalTime: diff,
+        timeUnit: 'ms'
+      }
+      record(APARTMENT_DETAILS_VIEW_END, endPayload);
+    }
+  }, [])
+
+
   return (
     <View className="flex-1">
       <ScrollView className="mt-12">
