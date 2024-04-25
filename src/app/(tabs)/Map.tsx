@@ -173,7 +173,7 @@ const MapPage = ({}: MapPageProps) => {
                 key={index}
                 origin={route.origin}
                 destination={route.destination}
-                apikey={GOOGLE_API_KEY}
+                apikey={process.env.EXPO_PUBLIC_GOOGLE_API_KEY || ''}
                 strokeWidth={4}
                 strokeColor={['#ff2700', '#0c16d3', '#32CD32'][index % 3]} // Use different colors for each route
                 onReady={(result) => {
@@ -246,7 +246,7 @@ const MapPage = ({}: MapPageProps) => {
         onRequestClose={() => setShowModal(!showModal)}
         presentationStyle={"formSheet"}
       >
-        <View style={styles.modalView}>
+        <View className="bg-neutral-950" style={styles.modalView}>
           {/*<TouchableOpacity style={styles.closeButton} onPress={() => setShowModal(false)}>*/}
           {/*  <Text style={styles.closeButtonText}>Close</Text>*/}
           {/*</TouchableOpacity>*/}
@@ -254,7 +254,7 @@ const MapPage = ({}: MapPageProps) => {
             data={selectedApartmentData}
             keyExtractor={( item, index ) => `${item.propertyId}-${item.key}-${index}`}
             renderItem={({ item }) => (
-              <ApartmentItem apartment={item} token={token} isSkeletonLoading={false} showScore={true} />
+              <ApartmentItem apartment={item} token={token} isSkeletonLoading={false} showScore={false} />
             )}
           />
         </View>
@@ -274,8 +274,6 @@ const styles = StyleSheet.create({
   modalView: {
     flex: 1,
     // marginTop: 100,
-    backgroundColor: 'white',
-    borderRadius: 20,
     padding: 15,
     shadowColor: '#000',
     shadowOffset: {

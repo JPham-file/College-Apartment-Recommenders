@@ -78,7 +78,7 @@ export default function TabOneScreen() {
     setApartment(apartment);
     router.push({
       pathname: '/modal',
-      params: {  showScore: 1 },
+      params: {  showScore: 0 },
     });
     
   };
